@@ -1,0 +1,5 @@
+C:\Users\kevin\Documents\moveme-read-only\PSMoveSharp\PSMoveSharpAR\PSMoveSharpAR\obj\Debug\ResolveAssemblyReference.cache
+C:\Users\kevin\Documents\moveme-read-only\PSMoveSharp\PSMoveSharpAR\PSMoveSharpAR\obj\Debug\PSMoveSharpAR.ARGUI.resources
+C:\Users\kevin\Documents\moveme-read-only\PSMoveSharp\PSMoveSharpAR\PSMoveSharpAR\obj\Debug\PSMoveSharpAR.Properties.Resources.resources
+C:\Users\kevin\Documents\moveme-read-only\PSMoveSharp\PSMoveSharpAR\PSMoveSharpAR\obj\Debug\ResGen.read.1.tlog
+C:\Users\kevin\Documents\moveme-read-only\PSMoveSharp\PSMoveSharpAR\PSMoveSharpAR\obj\Debug\ResGen.write.1.tlog

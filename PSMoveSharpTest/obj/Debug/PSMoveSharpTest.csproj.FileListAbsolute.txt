@@ -1,0 +1,12 @@
+C:\Users\kevin\Documents\moveme-read-only\PSMoveSharp\PSMoveSharpTest\bin\Debug\PSMoveSharpTest.exe.config
+C:\Users\kevin\Documents\moveme-read-only\PSMoveSharp\PSMoveSharpTest\bin\Debug\PSMoveSharpTest.exe
+C:\Users\kevin\Documents\moveme-read-only\PSMoveSharp\PSMoveSharpTest\bin\Debug\PSMoveSharpTest.pdb
+C:\Users\kevin\Documents\moveme-read-only\PSMoveSharp\PSMoveSharpTest\bin\Debug\PSMoveSharp.dll
+C:\Users\kevin\Documents\moveme-read-only\PSMoveSharp\PSMoveSharpTest\bin\Debug\PSMoveSharp.pdb
+C:\Users\kevin\Documents\moveme-read-only\PSMoveSharp\PSMoveSharpTest\obj\Debug\ResolveAssemblyReference.cache
+C:\Users\kevin\Documents\moveme-read-only\PSMoveSharp\PSMoveSharpTest\obj\Debug\PSMoveSharpTest.MoveSharpGUI.resources
+C:\Users\kevin\Documents\moveme-read-only\PSMoveSharp\PSMoveSharpTest\obj\Debug\PSMoveSharpTest.Properties.Resources.resources
+C:\Users\kevin\Documents\moveme-read-only\PSMoveSharp\PSMoveSharpTest\obj\Debug\ResGen.read.1.tlog
+C:\Users\kevin\Documents\moveme-read-only\PSMoveSharp\PSMoveSharpTest\obj\Debug\ResGen.write.1.tlog
+C:\Users\kevin\Documents\moveme-read-only\PSMoveSharp\PSMoveSharpTest\obj\Debug\PSMoveSharpTest.exe
+C:\Users\kevin\Documents\moveme-read-only\PSMoveSharp\PSMoveSharpTest\obj\Debug\PSMoveSharpTest.pdb
