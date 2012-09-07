@@ -46,6 +46,7 @@
             this.textBoxServerAddress = new System.Windows.Forms.TextBox();
             this.tabControlPosition = new System.Windows.Forms.TabControl();
             this.tabPageMove = new System.Windows.Forms.TabPage();
+            this.trackAllHuesButton = new System.Windows.Forms.Button();
             this.calibrateButton = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.rumbleBar = new System.Windows.Forms.TrackBar();
@@ -194,6 +195,9 @@
             this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.imageBox = new System.Windows.Forms.PictureBox();
             this.ImagePausedToggleButton = new System.Windows.Forms.Button();
+            this.tabPageSculpture = new System.Windows.Forms.TabPage();
+            this.button1 = new System.Windows.Forms.Button();
+            this.glControl1 = new OpenTK.GLControl();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
@@ -209,7 +213,6 @@
             this.checkBox2 = new System.Windows.Forms.CheckBox();
             this.checkBox3 = new System.Windows.Forms.CheckBox();
             this.checkBox4 = new System.Windows.Forms.CheckBox();
-            this.trackAllHuesButton = new System.Windows.Forms.Button();
             this.tabPage1.SuspendLayout();
             this.splitMain.Panel1.SuspendLayout();
             this.splitMain.Panel2.SuspendLayout();
@@ -237,6 +240,7 @@
             this.tableLayoutPanelPosition.SuspendLayout();
             this.tabPageCamera.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.imageBox)).BeginInit();
+            this.tabPageSculpture.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -423,6 +427,7 @@
             this.tabControlPosition.Controls.Add(this.tabPageLaserPointer);
             this.tabControlPosition.Controls.Add(this.tabPagePositionPointer);
             this.tabControlPosition.Controls.Add(this.tabPageCamera);
+            this.tabControlPosition.Controls.Add(this.tabPageSculpture);
             this.tabControlPosition.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tabControlPosition.Location = new System.Drawing.Point(0, 0);
             this.tabControlPosition.Name = "tabControlPosition";
@@ -450,6 +455,16 @@
             this.tabPageMove.Text = "Move Overview";
             this.tabPageMove.UseVisualStyleBackColor = true;
             // 
+            // trackAllHuesButton
+            // 
+            this.trackAllHuesButton.Location = new System.Drawing.Point(187, 24);
+            this.trackAllHuesButton.Name = "trackAllHuesButton";
+            this.trackAllHuesButton.Size = new System.Drawing.Size(75, 23);
+            this.trackAllHuesButton.TabIndex = 32;
+            this.trackAllHuesButton.Text = "Track all";
+            this.trackAllHuesButton.UseVisualStyleBackColor = true;
+            this.trackAllHuesButton.Click += new System.EventHandler(this.trackAllHuesButton_Click);
+            // 
             // calibrateButton
             // 
             this.calibrateButton.Location = new System.Drawing.Point(420, 221);
@@ -472,9 +487,9 @@
             // 
             // rumbleBar
             // 
-            this.rumbleBar.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.rumbleBar.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.rumbleBar.Location = new System.Drawing.Point(31, 35);
             this.rumbleBar.Maximum = 255;
             this.rumbleBar.Name = "rumbleBar";
@@ -1777,9 +1792,9 @@
             // 
             // pointerDisplayControlLaser
             // 
-            this.pointerDisplayControlLaser.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.pointerDisplayControlLaser.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.pointerDisplayControlLaser.Location = new System.Drawing.Point(280, 3);
             this.pointerDisplayControlLaser.Name = "pointerDisplayControlLaser";
             this.pointerDisplayControlLaser.Size = new System.Drawing.Size(426, 414);
@@ -1984,9 +1999,9 @@
             // 
             // pointerDisplayControlPosition
             // 
-            this.pointerDisplayControlPosition.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.pointerDisplayControlPosition.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.pointerDisplayControlPosition.Location = new System.Drawing.Point(280, 3);
             this.pointerDisplayControlPosition.Name = "pointerDisplayControlPosition";
             this.pointerDisplayControlPosition.Size = new System.Drawing.Size(426, 414);
@@ -2211,9 +2226,9 @@
             // 
             // imageBox
             // 
-            this.imageBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.imageBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.imageBox.Location = new System.Drawing.Point(3, 40);
             this.imageBox.Name = "imageBox";
             this.imageBox.Size = new System.Drawing.Size(703, 434);
@@ -2230,6 +2245,38 @@
             this.ImagePausedToggleButton.Text = "Unpause";
             this.ImagePausedToggleButton.UseVisualStyleBackColor = true;
             this.ImagePausedToggleButton.Click += new System.EventHandler(this.ImagePausedToggleButton_Click);
+            // 
+            // tabPageSculpture
+            // 
+            this.tabPageSculpture.Controls.Add(this.button1);
+            this.tabPageSculpture.Controls.Add(this.glControl1);
+            this.tabPageSculpture.Location = new System.Drawing.Point(4, 22);
+            this.tabPageSculpture.Name = "tabPageSculpture";
+            this.tabPageSculpture.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPageSculpture.Size = new System.Drawing.Size(709, 477);
+            this.tabPageSculpture.TabIndex = 5;
+            this.tabPageSculpture.Text = "Sculpture";
+            this.tabPageSculpture.UseVisualStyleBackColor = true;
+            // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(83, 25);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(75, 23);
+            this.button1.TabIndex = 1;
+            this.button1.Text = "button1";
+            this.button1.UseVisualStyleBackColor = true;
+            // 
+            // glControl1
+            // 
+            this.glControl1.BackColor = System.Drawing.Color.Black;
+            this.glControl1.Location = new System.Drawing.Point(6, 70);
+            this.glControl1.Name = "glControl1";
+            this.glControl1.Size = new System.Drawing.Size(687, 393);
+            this.glControl1.TabIndex = 0;
+            this.glControl1.VSync = false;
+            this.glControl1.Load += new System.EventHandler(this.glControl1_Load_1);
+            this.glControl1.Paint += new System.Windows.Forms.PaintEventHandler(this.glControl1_Paint);
             // 
             // tableLayoutPanel1
             // 
@@ -2406,16 +2453,6 @@
             this.checkBox4.Text = "4";
             this.checkBox4.UseVisualStyleBackColor = true;
             // 
-            // trackAllHuesButton
-            // 
-            this.trackAllHuesButton.Location = new System.Drawing.Point(187, 24);
-            this.trackAllHuesButton.Name = "trackAllHuesButton";
-            this.trackAllHuesButton.Size = new System.Drawing.Size(75, 23);
-            this.trackAllHuesButton.TabIndex = 32;
-            this.trackAllHuesButton.Text = "Track all";
-            this.trackAllHuesButton.UseVisualStyleBackColor = true;
-            this.trackAllHuesButton.Click += new System.EventHandler(this.trackAllHuesButton_Click);
-            // 
             // MoveSharpGUI
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -2470,6 +2507,7 @@
             this.tableLayoutPanelPosition.PerformLayout();
             this.tabPageCamera.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.imageBox)).EndInit();
+            this.tabPageSculpture.ResumeLayout(false);
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();
             this.ResumeLayout(false);
@@ -2660,6 +2698,9 @@
         private System.Windows.Forms.ComboBox comboBox1;
         private System.Windows.Forms.Button calibrateButton;
         private System.Windows.Forms.Button trackAllHuesButton;
+        private System.Windows.Forms.TabPage tabPageSculpture;
+        private OpenTK.GLControl glControl1;
+        private System.Windows.Forms.Button button1;
 
     }
 }

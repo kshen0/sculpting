@@ -8,15 +8,32 @@ using System.Text;
 using System.Windows.Forms;
 using PSMoveSharp;
 
+using OpenTK;
+using OpenTK.Graphics;
+using OpenTK.Graphics.OpenGL;
+
 namespace PSMoveSharpTest
 {
-
     public partial class MoveSharpGUI : Form
     {
+        bool glControlLoaded = false;
+
         public MoveSharpGUI()
         {
             InitializeComponent();
             updateGuiDelegate = updateState;
+
+            // ----- start openTK demo ------
+            // The 'using' idiom guarantees proper resource cleanup.
+            // We request 30 UpdateFrame events per second, and unlimited
+            // RenderFrame events (as fast as the computer can handle).
+            /*
+            using (Game game = new Game())
+            {
+                game.Run(30.0);
+            }
+            */
+            // ----- end openTK demo ------
         }
 
         public delegate void ProcessPSMoveStateDelegate();
@@ -29,6 +46,7 @@ namespace PSMoveSharpTest
             Laser = 2,
             Position = 3,
             Camera = 4,
+            Sculpture = 5,
         }
 
         public enum ClientCalibrationStep
@@ -93,7 +111,7 @@ namespace PSMoveSharpTest
             
             processed_packet_index = state.packet_index;
 
-            carve(state);
+            //carve(state);
 
             switch ((TabPageIndex) tabControlPosition.SelectedIndex)
             {
@@ -111,6 +129,9 @@ namespace PSMoveSharpTest
                     break;
                 case TabPageIndex.Camera:
                     updateTabPageCamera(camera_frame_state);
+                    break;
+                case TabPageIndex.Sculpture:
+                    updateTabPageSculpture(state);
                     break;
             }
         }
@@ -418,6 +439,11 @@ namespace PSMoveSharpTest
             pointerDisplayControlPosition.Update();
         }
 
+        private void updateTabPageSculpture(PSMoveSharpState state)
+        {
+            Console.WriteLine("foo");
+        }
+
         private void textBoxServerPort_TextChanged(object sender, EventArgs e)
         {
             try
@@ -587,6 +613,218 @@ namespace PSMoveSharpTest
             }
         }
 
+        private void glControl1_Load_1(object sender, EventArgs e)
+        {
+            glControlLoaded = true;
+            GL.ClearColor(Color.SkyBlue);
+            SetupViewport();
+        }
+
+        // GL tutorial at http://www.opentk.com/doc/graphics/geometry/vertex-buffer-objects
+        // http://www.opentk.com/doc/chapter/2/opengl/geometry/drawing
+        private void glControl1_Paint(object sender, PaintEventArgs e)
+        {
+            /*
+            // vbo nonsense
+            if (!glControlLoaded) // Play nice
+                return;
+
+            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+
+            // we imagine rings to be latitude lines and segments to be longitude lines
+            // drawing can be supplied if necessary
+            int rings = 4;
+            int segments = 4;
+            uint[] Indices = getSphereIndices(rings, segments);
+            float[] Vertices = CreateSphere(2, rings, segments);
+
+            //GL.EnableClientState(ArrayCap.VertexArray);
+
+            // what is the purpose of VBOid?
+            uint[] VBOid = new uint[2];
+            GL.GenBuffers(2, VBOid);
+
+            // bind indices - tell GL in which order the triangles should be drawn
+            GL.BindBuffer(BufferTarget.ElementArrayBuffer, VBOid[1]);
+            GL.BufferData(BufferTarget.ElementArrayBuffer, (IntPtr)(Indices.Length * sizeof(uint)), Indices, BufferUsageHint.StaticDraw);
+           
+            // bind vertices - tell GL the positions of the vertices of the sphere in 3D space
+            GL.BindBuffer(BufferTarget.ArrayBuffer, VBOid[0]);
+            GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(Vertices.Length * sizeof(float)), Vertices, BufferUsageHint.StaticDraw);
+            
+            // draw the buffers as a Triangle Strip using the Indices calculated earlier
+            GL.DrawElements(BeginMode.TriangleStrip, Indices.Length, DrawElementsType.UnsignedInt, Indices);
+            glControl1.SwapBuffers();
+            */
+            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+
+            int rings = 4;
+            int segments = 4;
+            uint[] Indices = getSphereIndices(rings, segments);
+            Vertex[] Vertices = CreateSphere(.33f, rings, segments);
+
+            GL.Color3(Color.Yellow);
+            Matrix4 projection = Matrix4.CreatePerspectiveFieldOfView((float)Math.PI / 4.0f, glControl1.ClientSize.Width / (float)glControl1.ClientSize.Height, 10, 128);
+            GL.MatrixMode(MatrixMode.Projection);
+            GL.LoadMatrix(ref projection);
+            GL.LoadIdentity();
+
+            GL.Begin(BeginMode.Triangles);
+            for (int i = 0; i < Indices.Length; i+=3)
+            {
+                Vertex v1 = Vertices[Indices[i]];
+                Vertex v2 = Vertices[Indices[i+1]];
+                Vertex v3 = Vertices[Indices[i+2]];
+                GL.Vertex3(v1.Position);
+                GL.Vertex3(v2.Position);
+                GL.Vertex3(v3.Position);
+            }
+            GL.End();
+            glControl1.SwapBuffers();
+
+            /*
+            GL.Begin(BeginMode.Triangles);
+            Vertex v1 = new Vertex();
+            v1.Position = new Vector3(0.0f, 1.0f, 1.0f);
+            Vertex v2 = new Vertex();
+            v2.Position = new Vector3(-1.0f, -0.1f, 1.0f);
+            Vertex v3 = new Vertex();
+            v3.Position = new Vector3(0.1f, -0.1f, 1.0f);
+            GL.Vertex3(v1.Position);
+            GL.Vertex3(v2.Position);
+            GL.Vertex3(v3.Position);
+            GL.End();
+
+            glControl1.SwapBuffers();
+            */
+        }
+        
+        // segments refers to the number of longitude lines
+        private uint[] getSphereIndices(int rings, int segments)
+        {
+            int trianglesPerSegment = 2 + 2 * (rings - 3);
+            int indicesSize = 3 * trianglesPerSegment * (segments / 2);
+            uint[] indices = new uint[indicesSize];
+
+            int i = 0;
+            bool add1 = false;
+            for (uint seg = 0; seg < (segments / 2); seg++)
+            {
+                uint a = seg * 2;
+                uint b = (uint)(a + segments);
+                uint c = b + 1;
+                for (uint triangle = 0; triangle < 2 + 2 * (rings - 3); triangle++)
+                {
+                    indices[i] = a;
+                    indices[i + 1] = b;
+                    indices[i + 2] = c;
+                    i += 3;
+                    uint newC = 999999;
+                    if (add1)
+                    {
+                        newC = c + 1;
+                    }
+                    else
+                    {
+                        newC = (uint)(c + (segments - 1));
+                    }
+                    add1 = !add1;
+                    a = b;
+                    b = c;
+                    c = newC;
+                }
+            }
+            return indices;
+            /*
+            int trianglesPerSegment = 2 + 2 * (rings - 3);
+            int indicesSize = 3 * trianglesPerSegment * segments;
+            uint[] indices = new uint[indicesSize];
+
+            int i = 0;
+            for (uint seg = 0; seg < segments; seg++)
+            {
+                uint a = seg * ((uint)rings * 2);
+                uint b = a + 1;
+                uint c = b + (uint)rings;
+                for (uint triangle = 0; triangle < 2 + 2*(rings-3); triangle ++) 
+                {
+                    indices[i] = a;
+                    indices[i + 1] = b;
+                    indices[i + 2] = c;
+                    i += 3;
+                    uint newC = b + 1;
+                    a = b;
+                    b = c;
+                    c = newC;
+                }
+            }
+            return indices;
+             * */
+        }
+
+        private Vertex[] CreateSphere(float radius, int rings, int segments)
+        {
+            Vertex[] sphere = new Vertex[rings * segments];
+            int i = 0;
+            for (double y = 0; y < rings; y++)
+            {
+                for (double x = 0; x < segments; x++)
+                {
+                    double phi = (y / (rings - 1)) * Math.PI;
+                    double theta = (x / (segments - 1)) * 2 * Math.PI;
+                    float X = (float)(radius * Math.Sin(phi) * Math.Cos(theta));
+                    float Y = (float)(radius * Math.Cos(phi));
+                    float Z = (float)(radius * Math.Sin(phi) * Math.Sin(theta));
+                    sphere[i].Position = new Vector3(X, Y, Z);
+                    i ++;
+                }
+            }
+            return sphere;
+        }
+
+        //[StructLayout(LayoutKind.Sequential)]
+        struct Vertex
+        { // mimic InterleavedArrayFormat.T2fN3fV3f
+            public Vector2 TexCoord;
+            public Vector3 Normal;
+            public Vector3 Position;
+        }
+        /*
+        private float[] CreateSphere(float radius, int rings, int segments)
+        {
+            float[] sphere = new float[rings * segments * 3];
+            int i = 0;
+            for (double y = 0; y < rings; y++)
+            {
+                for (double x = 0; x < segments; x++)
+                {
+                    double phi = (y / (rings - 1)) * Math.PI;
+                    double theta = (x / (segments - 1)) * 2 * Math.PI;
+                    sphere[i] = (float)(radius * Math.Sin(phi) * Math.Cos(theta));
+                    sphere[i + 1] = (float)(radius * Math.Cos(phi));
+                    sphere[i + 2] = (float)(radius * Math.Sin(phi) * Math.Sin(theta));
+                    sphere.Add(new Vector3
+                    {
+                        X = (float)(radius * Math.Sin(phi) * Math.Cos(theta)),
+                        Y = (float)(radius * Math.Cos(phi)),
+                        Z = (float)(radius * Math.Sin(phi) * Math.Sin(theta)),
+                    });
+                    i+=3;
+                }
+            }
+            return sphere;
+        }
+        */
+
+        private void SetupViewport()
+        {
+            int w = glControl1.Width;
+            int h = glControl1.Height;
+            GL.MatrixMode(MatrixMode.Projection);
+            GL.LoadIdentity();
+            GL.Ortho(0, w, 0, h, -1, 1); // Bottom-left corner pixel has coordinate (0, 0)
+            GL.Viewport(0, 0, w, h); // Use all of the glControl painting area
+        }
     }
 
     public class PointerDisplayControl : Control

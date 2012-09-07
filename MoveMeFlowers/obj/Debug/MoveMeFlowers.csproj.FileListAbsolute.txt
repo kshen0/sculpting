@@ -1,5 +1,16 @@
+C:\Users\kevin\Documents\moveme-read-only\PSMoveSharp\MoveMeFlowers\bin\Debug\MoveMeFlowers.exe.config
+C:\Users\kevin\Documents\moveme-read-only\PSMoveSharp\MoveMeFlowers\bin\Debug\MoveMeFlowers.exe
+C:\Users\kevin\Documents\moveme-read-only\PSMoveSharp\MoveMeFlowers\bin\Debug\MoveMeFlowers.pdb
+C:\Users\kevin\Documents\moveme-read-only\PSMoveSharp\MoveMeFlowers\bin\Debug\OpenTK.dll
+C:\Users\kevin\Documents\moveme-read-only\PSMoveSharp\MoveMeFlowers\bin\Debug\OpenTK.GLControl.dll
+C:\Users\kevin\Documents\moveme-read-only\PSMoveSharp\MoveMeFlowers\bin\Debug\PSMoveSharp.dll
+C:\Users\kevin\Documents\moveme-read-only\PSMoveSharp\MoveMeFlowers\bin\Debug\PSMoveSharp.pdb
+C:\Users\kevin\Documents\moveme-read-only\PSMoveSharp\MoveMeFlowers\bin\Debug\OpenTK.xml
+C:\Users\kevin\Documents\moveme-read-only\PSMoveSharp\MoveMeFlowers\bin\Debug\OpenTK.GLControl.xml
 C:\Users\kevin\Documents\moveme-read-only\PSMoveSharp\MoveMeFlowers\obj\Debug\ResolveAssemblyReference.cache
 C:\Users\kevin\Documents\moveme-read-only\PSMoveSharp\MoveMeFlowers\obj\Debug\MoveMeFlowers.MoveMeFlowersGUI.resources
 C:\Users\kevin\Documents\moveme-read-only\PSMoveSharp\MoveMeFlowers\obj\Debug\MoveMeFlowers.Properties.Resources.resources
 C:\Users\kevin\Documents\moveme-read-only\PSMoveSharp\MoveMeFlowers\obj\Debug\ResGen.read.1.tlog
 C:\Users\kevin\Documents\moveme-read-only\PSMoveSharp\MoveMeFlowers\obj\Debug\ResGen.write.1.tlog
+C:\Users\kevin\Documents\moveme-read-only\PSMoveSharp\MoveMeFlowers\obj\Debug\MoveMeFlowers.exe
+C:\Users\kevin\Documents\moveme-read-only\PSMoveSharp\MoveMeFlowers\obj\Debug\MoveMeFlowers.pdb

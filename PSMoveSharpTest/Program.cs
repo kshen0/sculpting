@@ -70,6 +70,9 @@ namespace PSMoveSharpTest
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             form = new MoveSharpGUI();
+
+
+
             updateGuiThread.Start();
             Application.Run(form);
 
