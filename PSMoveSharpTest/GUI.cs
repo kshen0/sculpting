@@ -659,25 +659,48 @@ namespace PSMoveSharpTest
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
             int rings = 4;
-            int segments = 4;
+            int segments = 2;
             uint[] Indices = getSphereIndices(rings, segments);
-            Vertex[] Vertices = CreateSphere(.33f, rings, segments);
+            Vertex[] Vertices = CreateSphere(1.0f, rings, segments);
+            Color[] colors = { Color.Purple, Color.Yellow, Color.Red, Color.Blue, Color.Green , Color.Magenta, Color.White, Color.Gray, Color.Gold, Color.Pink};
 
-            GL.Color3(Color.Yellow);
             Matrix4 projection = Matrix4.CreatePerspectiveFieldOfView((float)Math.PI / 4.0f, glControl1.ClientSize.Width / (float)glControl1.ClientSize.Height, 10, 128);
             GL.MatrixMode(MatrixMode.Projection);
             GL.LoadMatrix(ref projection);
             GL.LoadIdentity();
 
             GL.Begin(BeginMode.Triangles);
+            int colorNum = 0;
+            int trianglesPerSegment = 2 + 2 * (rings - 3);
+            int triangleCount = 0;
+            GL.Color3(Color.Orange);
             for (int i = 0; i < Indices.Length; i+=3)
             {
+                if (triangleCount == trianglesPerSegment)
+                {
+                    triangleCount = 0;
+                    GL.Color3(colors[colorNum]);
+                    colorNum++;
+                    Console.Write("Strip now being drawn in color: " + colors[colorNum].Name + "\n");
+                }
+                //GL.Color3(colors[colorNum]);
                 Vertex v1 = Vertices[Indices[i]];
                 Vertex v2 = Vertices[Indices[i+1]];
                 Vertex v3 = Vertices[Indices[i+2]];
+                Vector3.Multiply(v1.Normal, -1.0f);
+                Vector3.Multiply(v2.Normal, -1.0f);
+                Vector3.Multiply(v3.Normal, -1.0f);
+
+                GL.Normal3(v1.Normal);
                 GL.Vertex3(v1.Position);
+                GL.Normal3(v2.Normal);
                 GL.Vertex3(v2.Position);
+                GL.Normal3(v3.Normal);
                 GL.Vertex3(v3.Position);
+                //Console.Write("Drew triangle at " + v1.Position.ToString() + ", " + v2.Position.ToString() + ", " + v3.Position.ToString() + "\n" +
+                //                " with normals " + v1.Normal.ToString() + ", " + v2.Normal.ToString() + ", " + v3.Normal.ToString() + "\n");
+                triangleCount++;
+                //colorNum = (colorNum + 1) % colors.Length;
             }
             GL.End();
             glControl1.SwapBuffers();
@@ -776,6 +799,7 @@ namespace PSMoveSharpTest
                     float Y = (float)(radius * Math.Cos(phi));
                     float Z = (float)(radius * Math.Sin(phi) * Math.Sin(theta));
                     sphere[i].Position = new Vector3(X, Y, Z);
+                    sphere[i].Normal = new Vector3(X, Y, Z);
                     i ++;
                 }
             }
