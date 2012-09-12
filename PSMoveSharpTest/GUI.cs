@@ -616,59 +616,44 @@ namespace PSMoveSharpTest
         private void glControl1_Load_1(object sender, EventArgs e)
         {
             glControlLoaded = true;
-            GL.ClearColor(Color.SkyBlue);
+            GL.ClearColor(Color.Black);
             SetupViewport();
         }
 
-        // GL tutorial at http://www.opentk.com/doc/graphics/geometry/vertex-buffer-objects
-        // http://www.opentk.com/doc/chapter/2/opengl/geometry/drawing
         private void glControl1_Paint(object sender, PaintEventArgs e)
         {
-            /*
-            // vbo nonsense
-            if (!glControlLoaded) // Play nice
-                return;
-
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
-            // we imagine rings to be latitude lines and segments to be longitude lines
-            // drawing can be supplied if necessary
-            int rings = 4;
-            int segments = 4;
-            uint[] Indices = getSphereIndices(rings, segments);
-            float[] Vertices = CreateSphere(2, rings, segments);
-
-            //GL.EnableClientState(ArrayCap.VertexArray);
-
-            // what is the purpose of VBOid?
-            uint[] VBOid = new uint[2];
-            GL.GenBuffers(2, VBOid);
-
-            // bind indices - tell GL in which order the triangles should be drawn
-            GL.BindBuffer(BufferTarget.ElementArrayBuffer, VBOid[1]);
-            GL.BufferData(BufferTarget.ElementArrayBuffer, (IntPtr)(Indices.Length * sizeof(uint)), Indices, BufferUsageHint.StaticDraw);
-           
-            // bind vertices - tell GL the positions of the vertices of the sphere in 3D space
-            GL.BindBuffer(BufferTarget.ArrayBuffer, VBOid[0]);
-            GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(Vertices.Length * sizeof(float)), Vertices, BufferUsageHint.StaticDraw);
-            
-            // draw the buffers as a Triangle Strip using the Indices calculated earlier
-            GL.DrawElements(BeginMode.TriangleStrip, Indices.Length, DrawElementsType.UnsignedInt, Indices);
-            glControl1.SwapBuffers();
-            */
-            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-
-            int rings = 4;
-            int segments = 2;
+            int rings = 20;
+            int segments = 20;
             uint[] Indices = getSphereIndices(rings, segments);
             Vertex[] Vertices = CreateSphere(1.0f, rings, segments);
             Color[] colors = { Color.Purple, Color.Yellow, Color.Red, Color.Blue, Color.Green , Color.Magenta, Color.White, Color.Gray, Color.Gold, Color.Pink};
 
-            Matrix4 projection = Matrix4.CreatePerspectiveFieldOfView((float)Math.PI / 4.0f, glControl1.ClientSize.Width / (float)glControl1.ClientSize.Height, 10, 128);
+            /*
+            Matrix4 projection = Matrix4.CreatePerspectiveFieldOfView((float)Math.PI / 4.0f, (float)glControl1.ClientSize.Width / (float)glControl1.ClientSize.Height, 1, 128);
             GL.MatrixMode(MatrixMode.Projection);
             GL.LoadMatrix(ref projection);
-            GL.LoadIdentity();
+             * */
+            //GL.LoadIdentity();
+            //GL.MatrixMode(MatrixMode.Modelview);
 
+            // Triangle
+            GL.MatrixMode(MatrixMode.Modelview);
+            GL.LoadIdentity();
+            GL.Scale(new Vector3(100, 100, 100));
+            GL.Translate(new Vector3(1.5f, 1.5f, 0)); // compounds on the Scale function, so actually translates 200
+            
+            
+            /*
+            GL.Color3(Color.Yellow);
+            GL.Begin(BeginMode.Triangles);
+            GL.Vertex3(10, 20, 10);
+            GL.Vertex3(100, 20, 10);
+            GL.Vertex3(100, 50, 10);
+            GL.End();
+            */
+            
             GL.Begin(BeginMode.Triangles);
             int colorNum = 0;
             int trianglesPerSegment = 2 + 2 * (rings - 3);
@@ -683,13 +668,10 @@ namespace PSMoveSharpTest
                     colorNum++;
                     Console.Write("Strip now being drawn in color: " + colors[colorNum].Name + "\n");
                 }
-                //GL.Color3(colors[colorNum]);
+               // GL.Color3(colors[colorNum]);
                 Vertex v1 = Vertices[Indices[i]];
                 Vertex v2 = Vertices[Indices[i+1]];
                 Vertex v3 = Vertices[Indices[i+2]];
-                Vector3.Multiply(v1.Normal, -1.0f);
-                Vector3.Multiply(v2.Normal, -1.0f);
-                Vector3.Multiply(v3.Normal, -1.0f);
 
                 GL.Normal3(v1.Normal);
                 GL.Vertex3(v1.Position);
@@ -697,29 +679,13 @@ namespace PSMoveSharpTest
                 GL.Vertex3(v2.Position);
                 GL.Normal3(v3.Normal);
                 GL.Vertex3(v3.Position);
-                //Console.Write("Drew triangle at " + v1.Position.ToString() + ", " + v2.Position.ToString() + ", " + v3.Position.ToString() + "\n" +
-                //                " with normals " + v1.Normal.ToString() + ", " + v2.Normal.ToString() + ", " + v3.Normal.ToString() + "\n");
                 triangleCount++;
                 //colorNum = (colorNum + 1) % colors.Length;
             }
-            GL.End();
-            glControl1.SwapBuffers();
-
-            /*
-            GL.Begin(BeginMode.Triangles);
-            Vertex v1 = new Vertex();
-            v1.Position = new Vector3(0.0f, 1.0f, 1.0f);
-            Vertex v2 = new Vertex();
-            v2.Position = new Vector3(-1.0f, -0.1f, 1.0f);
-            Vertex v3 = new Vertex();
-            v3.Position = new Vector3(0.1f, -0.1f, 1.0f);
-            GL.Vertex3(v1.Position);
-            GL.Vertex3(v2.Position);
-            GL.Vertex3(v3.Position);
+             
             GL.End();
 
             glControl1.SwapBuffers();
-            */
         }
         
         // segments refers to the number of longitude lines
@@ -758,31 +724,6 @@ namespace PSMoveSharpTest
                 }
             }
             return indices;
-            /*
-            int trianglesPerSegment = 2 + 2 * (rings - 3);
-            int indicesSize = 3 * trianglesPerSegment * segments;
-            uint[] indices = new uint[indicesSize];
-
-            int i = 0;
-            for (uint seg = 0; seg < segments; seg++)
-            {
-                uint a = seg * ((uint)rings * 2);
-                uint b = a + 1;
-                uint c = b + (uint)rings;
-                for (uint triangle = 0; triangle < 2 + 2*(rings-3); triangle ++) 
-                {
-                    indices[i] = a;
-                    indices[i + 1] = b;
-                    indices[i + 2] = c;
-                    i += 3;
-                    uint newC = b + 1;
-                    a = b;
-                    b = c;
-                    c = newC;
-                }
-            }
-            return indices;
-             * */
         }
 
         private Vertex[] CreateSphere(float radius, int rings, int segments)
@@ -794,7 +735,7 @@ namespace PSMoveSharpTest
                 for (double x = 0; x < segments; x++)
                 {
                     double phi = (y / (rings - 1)) * Math.PI;
-                    double theta = (x / (segments - 1)) * 2 * Math.PI;
+                    double theta = (x / (segments - 0)) * 2 * Math.PI;
                     float X = (float)(radius * Math.Sin(phi) * Math.Cos(theta));
                     float Y = (float)(radius * Math.Cos(phi));
                     float Z = (float)(radius * Math.Sin(phi) * Math.Sin(theta));
@@ -813,32 +754,6 @@ namespace PSMoveSharpTest
             public Vector3 Normal;
             public Vector3 Position;
         }
-        /*
-        private float[] CreateSphere(float radius, int rings, int segments)
-        {
-            float[] sphere = new float[rings * segments * 3];
-            int i = 0;
-            for (double y = 0; y < rings; y++)
-            {
-                for (double x = 0; x < segments; x++)
-                {
-                    double phi = (y / (rings - 1)) * Math.PI;
-                    double theta = (x / (segments - 1)) * 2 * Math.PI;
-                    sphere[i] = (float)(radius * Math.Sin(phi) * Math.Cos(theta));
-                    sphere[i + 1] = (float)(radius * Math.Cos(phi));
-                    sphere[i + 2] = (float)(radius * Math.Sin(phi) * Math.Sin(theta));
-                    sphere.Add(new Vector3
-                    {
-                        X = (float)(radius * Math.Sin(phi) * Math.Cos(theta)),
-                        Y = (float)(radius * Math.Cos(phi)),
-                        Z = (float)(radius * Math.Sin(phi) * Math.Sin(theta)),
-                    });
-                    i+=3;
-                }
-            }
-            return sphere;
-        }
-        */
 
         private void SetupViewport()
         {
@@ -846,7 +761,7 @@ namespace PSMoveSharpTest
             int h = glControl1.Height;
             GL.MatrixMode(MatrixMode.Projection);
             GL.LoadIdentity();
-            GL.Ortho(0, w, 0, h, -1, 1); // Bottom-left corner pixel has coordinate (0, 0)
+            GL.Ortho(0, w, 0, h, -100, 100); // Bottom-left corner pixel has coordinate (0, 0)
             GL.Viewport(0, 0, w, h); // Use all of the glControl painting area
         }
     }

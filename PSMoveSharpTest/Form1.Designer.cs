@@ -196,7 +196,6 @@
             this.imageBox = new System.Windows.Forms.PictureBox();
             this.ImagePausedToggleButton = new System.Windows.Forms.Button();
             this.tabPageSculpture = new System.Windows.Forms.TabPage();
-            this.button1 = new System.Windows.Forms.Button();
             this.glControl1 = new OpenTK.GLControl();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.label1 = new System.Windows.Forms.Label();
@@ -2248,7 +2247,6 @@
             // 
             // tabPageSculpture
             // 
-            this.tabPageSculpture.Controls.Add(this.button1);
             this.tabPageSculpture.Controls.Add(this.glControl1);
             this.tabPageSculpture.Location = new System.Drawing.Point(4, 22);
             this.tabPageSculpture.Name = "tabPageSculpture";
@@ -2257,15 +2255,6 @@
             this.tabPageSculpture.TabIndex = 5;
             this.tabPageSculpture.Text = "Sculpture";
             this.tabPageSculpture.UseVisualStyleBackColor = true;
-            // 
-            // button1
-            // 
-            this.button1.Location = new System.Drawing.Point(83, 25);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
-            this.button1.TabIndex = 1;
-            this.button1.Text = "button1";
-            this.button1.UseVisualStyleBackColor = true;
             // 
             // glControl1
             // 
@@ -2700,7 +2689,6 @@
         private System.Windows.Forms.Button trackAllHuesButton;
         private System.Windows.Forms.TabPage tabPageSculpture;
         private OpenTK.GLControl glControl1;
-        private System.Windows.Forms.Button button1;
 
     }
 }
