@@ -616,7 +616,7 @@ namespace PSMoveSharpTest
         private void glControl1_Load_1(object sender, EventArgs e)
         {
             glControlLoaded = true;
-            GL.ClearColor(Color.Black);
+            GL.ClearColor(Color.SkyBlue);
             SetupViewport();
         }
 
@@ -624,11 +624,7 @@ namespace PSMoveSharpTest
         {
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
-            int rings = 20;
-            int segments = 20;
-            uint[] Indices = getSphereIndices(rings, segments);
-            Vertex[] Vertices = CreateSphere(1.0f, rings, segments);
-            Color[] colors = { Color.Purple, Color.Yellow, Color.Red, Color.Blue, Color.Green , Color.Magenta, Color.White, Color.Gray, Color.Gold, Color.Pink};
+
 
             /*
             Matrix4 projection = Matrix4.CreatePerspectiveFieldOfView((float)Math.PI / 4.0f, (float)glControl1.ClientSize.Width / (float)glControl1.ClientSize.Height, 1, 128);
@@ -638,40 +634,42 @@ namespace PSMoveSharpTest
             //GL.LoadIdentity();
             //GL.MatrixMode(MatrixMode.Modelview);
 
-            // Triangle
+
+            DrawSphere(100.0f, 45);
+            glControl1.SwapBuffers();
+        }
+
+        private void drawSphere()
+        {
+            int rings = 20;
+            int segments = 20;
+            uint[] Indices = getSphereIndices(rings, segments);
+            Vertex[] Vertices = CreateSphere(1.0f, rings, segments);
+            Color[] colors = { Color.Purple, Color.Yellow, Color.Red, Color.Blue, Color.Green, Color.Magenta, Color.White, Color.Gray, Color.Gold, Color.Pink };
+
             GL.MatrixMode(MatrixMode.Modelview);
-            GL.LoadIdentity();
+            //GL.LoadIdentity();
             GL.Scale(new Vector3(100, 100, 100));
-            GL.Translate(new Vector3(1.5f, 1.5f, 0)); // compounds on the Scale function, so actually translates 200
-            
-            
-            /*
-            GL.Color3(Color.Yellow);
-            GL.Begin(BeginMode.Triangles);
-            GL.Vertex3(10, 20, 10);
-            GL.Vertex3(100, 20, 10);
-            GL.Vertex3(100, 50, 10);
-            GL.End();
-            */
-            
+            //GL.Translate(new Vector3(1.5f, 1.5f, -1.0f)); // compounds on the Scale function, so actually translates 200
+
             GL.Begin(BeginMode.Triangles);
             int colorNum = 0;
             int trianglesPerSegment = 2 + 2 * (rings - 3);
             int triangleCount = 0;
             GL.Color3(Color.Orange);
-            for (int i = 0; i < Indices.Length; i+=3)
+            for (int i = 0; i < Indices.Length; i += 3)
             {
                 if (triangleCount == trianglesPerSegment)
                 {
                     triangleCount = 0;
                     GL.Color3(colors[colorNum]);
                     colorNum++;
-                    Console.Write("Strip now being drawn in color: " + colors[colorNum].Name + "\n");
+                    //Console.Write("Strip now being drawn in color: " + colors[colorNum].Name + "\n");
                 }
-               // GL.Color3(colors[colorNum]);
+                // GL.Color3(colors[colorNum]);
                 Vertex v1 = Vertices[Indices[i]];
-                Vertex v2 = Vertices[Indices[i+1]];
-                Vertex v3 = Vertices[Indices[i+2]];
+                Vertex v2 = Vertices[Indices[i + 1]];
+                Vertex v3 = Vertices[Indices[i + 2]];
 
                 GL.Normal3(v1.Normal);
                 GL.Vertex3(v1.Position);
@@ -682,10 +680,17 @@ namespace PSMoveSharpTest
                 triangleCount++;
                 //colorNum = (colorNum + 1) % colors.Length;
             }
-             
             GL.End();
 
-            glControl1.SwapBuffers();
+            // draw triangle
+            /*
+            GL.Begin(BeginMode.Triangles);
+            GL.Color3(Color.Orange);
+            GL.Vertex3(0, 0, -2);
+            GL.Vertex3(0, 0, 2);
+            GL.Vertex3(0, 2, 0);
+            GL.End();
+             * */
         }
         
         // segments refers to the number of longitude lines
@@ -726,6 +731,58 @@ namespace PSMoveSharpTest
             return indices;
         }
 
+        private void DrawSphere(float Radius, uint Precision)
+        {
+            if (Radius < 0f)
+                Radius = -Radius;
+            if (Radius == 0f)
+                throw new DivideByZeroException("DrawSphere: Radius cannot be 0f.");
+            if (Precision == 0)
+                throw new DivideByZeroException("DrawSphere: Precision of 8 or greater is required.");
+
+            const float HalfPI = (float)(Math.PI * 0.5);
+            float OneThroughPrecision = 1.0f / Precision;
+            float TwoPIThroughPrecision = (float)(Math.PI * 2.0 * OneThroughPrecision);
+
+            float theta1, theta2, theta3;
+            OpenTK.Vector3 Normal, Position;
+
+            for (uint j = 0; j < Precision / 2; j++)
+            {
+                theta1 = (j * TwoPIThroughPrecision) - HalfPI;
+                theta2 = ((j + 1) * TwoPIThroughPrecision) - HalfPI;
+
+                GL.Begin(BeginMode.TriangleStrip);
+                for (uint i = 0; i <= Precision; i++)
+                {
+                    theta3 = i * TwoPIThroughPrecision;
+
+                    Normal.X = (float)(Math.Cos(theta2) * Math.Cos(theta3));
+                    Normal.Y = (float)Math.Sin(theta2);
+                    Normal.Z = (float)(Math.Cos(theta2) * Math.Sin(theta3));
+                    Position.X = Radius * Normal.X;
+                    Position.Y = Radius * Normal.Y;
+                    Position.Z = Radius * Normal.Z;
+
+                    GL.Normal3(Normal);
+                    GL.Color3(i * OneThroughPrecision, 2.0f * (j + 1) * OneThroughPrecision, 1.0f);
+                    GL.Vertex3(Position);
+
+                    Normal.X = (float)(Math.Cos(theta1) * Math.Cos(theta3));
+                    Normal.Y = (float)Math.Sin(theta1);
+                    Normal.Z = (float)(Math.Cos(theta1) * Math.Sin(theta3));
+                    Position.X = Radius * Normal.X;
+                    Position.Y = Radius * Normal.Y;
+                    Position.Z = Radius * Normal.Z;
+
+                    GL.Normal3(Normal);
+                    GL.Color3(i * OneThroughPrecision, 2.0f * (j + 1) * OneThroughPrecision, 1.0f);
+                    GL.Vertex3(Position);
+                }
+                GL.End();
+            }
+        }
+
         private Vertex[] CreateSphere(float radius, int rings, int segments)
         {
             Vertex[] sphere = new Vertex[rings * segments];
@@ -757,12 +814,40 @@ namespace PSMoveSharpTest
 
         private void SetupViewport()
         {
+           /*
+            // Orthographic
             int w = glControl1.Width;
             int h = glControl1.Height;
             GL.MatrixMode(MatrixMode.Projection);
             GL.LoadIdentity();
-            GL.Ortho(0, w, 0, h, -100, 100); // Bottom-left corner pixel has coordinate (0, 0)
+            GL.Ortho(0, w, 0, h, -10000, 10000); // Bottom-left corner pixel has coordinate (0, 0)
             GL.Viewport(0, 0, w, h); // Use all of the glControl painting area
+            */
+            
+            {
+                const float yFov = 0.785398163f; // 45
+                const float near = 500;
+                const float far = 1000;
+                float aspect_ratio = (float)glControl1.Width / (float)glControl1.Height;
+                OpenTK.Matrix4 projection;
+                projection = OpenTK.Matrix4.CreatePerspectiveFieldOfView(yFov, aspect_ratio, near, far);
+                GL.MatrixMode(MatrixMode.Projection);
+                GL.LoadIdentity();
+                GL.LoadMatrix(ref projection);
+            }
+
+            {
+                const float eye_height = 300;
+                OpenTK.Matrix4 lookat;
+                lookat = OpenTK.Matrix4.LookAt(600.0f, 300f, 0.0f,
+                                               0, 0, 0,
+                                               0.0f, 1.0f, 0.0f);
+
+                GL.MatrixMode(MatrixMode.Modelview);
+                GL.LoadIdentity();
+                GL.LoadMatrix(ref lookat);
+            }
+            
         }
     }
 

@@ -10,3 +10,6 @@ C:\Users\kevin\Documents\moveme-read-only\PSMoveSharp\PSMoveSharpMouser\obj\Debu
 C:\Users\kevin\Documents\moveme-read-only\PSMoveSharp\PSMoveSharpMouser\obj\Debug\ResGen.write.1.tlog
 C:\Users\kevin\Documents\moveme-read-only\PSMoveSharp\PSMoveSharpMouser\obj\Debug\PSMoveSharpMouser.exe
 C:\Users\kevin\Documents\moveme-read-only\PSMoveSharp\PSMoveSharpMouser\obj\Debug\PSMoveSharpMouser.pdb
+C:\Users\kevin\Documents\moveme-read-only\moveme-read-only\moveme-read-only\PSMoveSharp\PSMoveSharpMouser\bin\Debug\PSMoveSharpMouser.exe.config
+C:\Users\kevin\Documents\moveme-read-only\moveme-read-only\moveme-read-only\PSMoveSharp\PSMoveSharpMouser\obj\Debug\PSMoveSharpMouser.exe
+C:\Users\kevin\Documents\moveme-read-only\moveme-read-only\moveme-read-only\PSMoveSharp\PSMoveSharpMouser\obj\Debug\PSMoveSharpMouser.pdb

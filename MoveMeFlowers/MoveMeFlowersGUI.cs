@@ -247,7 +247,7 @@ namespace MoveMeFlowers
             GL.Color4(1.0f, 1.0f, 1.0f, 1.0f);
             GL.LineWidth(2.0f);
 
-            //DrawSphere(20.0f, 8);
+            DrawSphere(20.0f, 8);
 
             for (int i = 0; i < MoveMeFlowerStateConstants.MAX_FLOWERS; i++)
             {

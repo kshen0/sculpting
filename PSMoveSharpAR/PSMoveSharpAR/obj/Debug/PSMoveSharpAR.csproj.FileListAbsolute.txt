@@ -14,3 +14,6 @@ C:\Users\kevin\Documents\moveme-read-only\PSMoveSharp\PSMoveSharpAR\PSMoveSharpA
 C:\Users\kevin\Documents\moveme-read-only\PSMoveSharp\PSMoveSharpAR\PSMoveSharpAR\obj\Debug\ResGen.write.1.tlog
 C:\Users\kevin\Documents\moveme-read-only\PSMoveSharp\PSMoveSharpAR\PSMoveSharpAR\obj\Debug\PSMoveSharpAR.exe
 C:\Users\kevin\Documents\moveme-read-only\PSMoveSharp\PSMoveSharpAR\PSMoveSharpAR\obj\Debug\PSMoveSharpAR.pdb
+C:\Users\kevin\Documents\moveme-read-only\moveme-read-only\moveme-read-only\PSMoveSharp\PSMoveSharpAR\PSMoveSharpAR\bin\Debug\PSMoveSharpAR.exe.config
+C:\Users\kevin\Documents\moveme-read-only\moveme-read-only\moveme-read-only\PSMoveSharp\PSMoveSharpAR\PSMoveSharpAR\obj\Debug\PSMoveSharpAR.exe
+C:\Users\kevin\Documents\moveme-read-only\moveme-read-only\moveme-read-only\PSMoveSharp\PSMoveSharpAR\PSMoveSharpAR\obj\Debug\PSMoveSharpAR.pdb
