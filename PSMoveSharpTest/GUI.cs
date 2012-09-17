@@ -136,7 +136,7 @@ namespace PSMoveSharpTest
             }
         }
 
-        private void carve(PSMoveSharpState state)
+        private Vector3 getXYZ(PSMoveSharpState state)
         {
             PSMoveSharpGemState selected_gem = state.gemStates[Program.selected_move];
             bool selected_move_connected = (state.gemStatus[Program.selected_move].connected == 1);
@@ -147,10 +147,11 @@ namespace PSMoveSharpTest
 
             if (x == -999999 || y == -999999 || z == -999999)
             {
-                Console.WriteLine("Invalid position state in carve function");
+                Console.WriteLine("Invalid position state in getXYZ function");
             }
 
-            Console.WriteLine("Carving at " + x + ", " + y + ", " + z);
+            //Console.WriteLine("Location at " + x + ", " + y + ", " + z);
+            return new Vector3(x, y, z);
         }
 
         private void updateToolbar()
@@ -439,11 +440,6 @@ namespace PSMoveSharpTest
             pointerDisplayControlPosition.Update();
         }
 
-        private void updateTabPageSculpture(PSMoveSharpState state)
-        {
-            Console.WriteLine("foo");
-        }
-
         private void textBoxServerPort_TextChanged(object sender, EventArgs e)
         {
             try
@@ -620,25 +616,36 @@ namespace PSMoveSharpTest
             SetupViewport();
         }
 
-        private void glControl1_Paint(object sender, PaintEventArgs e)
+        private void updateTabPageSculpture(PSMoveSharpState state)
         {
-            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-
-
-
-            /*
-            Matrix4 projection = Matrix4.CreatePerspectiveFieldOfView((float)Math.PI / 4.0f, (float)glControl1.ClientSize.Width / (float)glControl1.ClientSize.Height, 1, 128);
-            GL.MatrixMode(MatrixMode.Projection);
-            GL.LoadMatrix(ref projection);
-             * */
-            //GL.LoadIdentity();
-            //GL.MatrixMode(MatrixMode.Modelview);
-
-
-            DrawSphere(100.0f, 45);
-            glControl1.SwapBuffers();
+            glControl1.Invalidate();
         }
 
+        private void glControl1_Paint(object sender, PaintEventArgs e)
+        {
+            if (!glControlLoaded)
+            {
+                return;
+            }
+
+            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+
+            PSMoveSharpState state = Program.moveClient.GetLatestState();
+            Vector3 pos = getXYZ(state);
+            float divisor = 4;
+            float drawX = pos.X / divisor;
+            float drawY = pos.Y / divisor;
+            float drawZ = pos.Z / divisor;
+            GL.PushMatrix();
+            GL.Translate(drawX, drawY, drawZ);
+            GL.Scale(15, 15, 15);
+            Console.WriteLine("Drawing at " + drawX + ", " + drawY + ", " + drawZ);
+            DrawSphere(1.0f, 40);
+            glControl1.SwapBuffers();
+            GL.PopMatrix();
+        }
+
+        /*
         private void drawSphere()
         {
             int rings = 20;
@@ -649,7 +656,7 @@ namespace PSMoveSharpTest
 
             GL.MatrixMode(MatrixMode.Modelview);
             //GL.LoadIdentity();
-            GL.Scale(new Vector3(100, 100, 100));
+            //GL.Scale(new Vector3(100, 100, 100));
             //GL.Translate(new Vector3(1.5f, 1.5f, -1.0f)); // compounds on the Scale function, so actually translates 200
 
             GL.Begin(BeginMode.Triangles);
@@ -683,16 +690,35 @@ namespace PSMoveSharpTest
             GL.End();
 
             // draw triangle
-            /*
-            GL.Begin(BeginMode.Triangles);
-            GL.Color3(Color.Orange);
-            GL.Vertex3(0, 0, -2);
-            GL.Vertex3(0, 0, 2);
-            GL.Vertex3(0, 2, 0);
-            GL.End();
-             * */
+            //GL.Begin(BeginMode.Triangles);
+            //GL.Color3(Color.Orange);
+            //GL.Vertex3(0, 0, -2);
+            //GL.Vertex3(0, 0, 2);
+            //GL.Vertex3(0, 2, 0);
+            //GL.End();
         }
-        
+
+        private Vertex[] CreateSphere(float radius, int rings, int segments)
+        {
+            Vertex[] sphere = new Vertex[rings * segments];
+            int i = 0;
+            for (double y = 0; y < rings; y++)
+            {
+                for (double x = 0; x < segments; x++)
+                {
+                    double phi = (y / (rings - 1)) * Math.PI;
+                    double theta = (x / (segments - 0)) * 2 * Math.PI;
+                    float X = (float)(radius * Math.Sin(phi) * Math.Cos(theta));
+                    float Y = (float)(radius * Math.Cos(phi));
+                    float Z = (float)(radius * Math.Sin(phi) * Math.Sin(theta));
+                    sphere[i].Position = new Vector3(X, Y, Z);
+                    sphere[i].Normal = new Vector3(X, Y, Z);
+                    i++;
+                }
+            }
+            return sphere;
+        }
+
         // segments refers to the number of longitude lines
         private uint[] getSphereIndices(int rings, int segments)
         {
@@ -730,6 +756,7 @@ namespace PSMoveSharpTest
             }
             return indices;
         }
+        */
 
         private void DrawSphere(float Radius, uint Precision)
         {
@@ -753,6 +780,7 @@ namespace PSMoveSharpTest
                 theta2 = ((j + 1) * TwoPIThroughPrecision) - HalfPI;
 
                 GL.Begin(BeginMode.TriangleStrip);
+
                 for (uint i = 0; i <= Precision; i++)
                 {
                     theta3 = i * TwoPIThroughPrecision;
@@ -783,27 +811,6 @@ namespace PSMoveSharpTest
             }
         }
 
-        private Vertex[] CreateSphere(float radius, int rings, int segments)
-        {
-            Vertex[] sphere = new Vertex[rings * segments];
-            int i = 0;
-            for (double y = 0; y < rings; y++)
-            {
-                for (double x = 0; x < segments; x++)
-                {
-                    double phi = (y / (rings - 1)) * Math.PI;
-                    double theta = (x / (segments - 0)) * 2 * Math.PI;
-                    float X = (float)(radius * Math.Sin(phi) * Math.Cos(theta));
-                    float Y = (float)(radius * Math.Cos(phi));
-                    float Z = (float)(radius * Math.Sin(phi) * Math.Sin(theta));
-                    sphere[i].Position = new Vector3(X, Y, Z);
-                    sphere[i].Normal = new Vector3(X, Y, Z);
-                    i ++;
-                }
-            }
-            return sphere;
-        }
-
         //[StructLayout(LayoutKind.Sequential)]
         struct Vertex
         { // mimic InterleavedArrayFormat.T2fN3fV3f
@@ -828,6 +835,8 @@ namespace PSMoveSharpTest
                 const float yFov = 0.785398163f; // 45
                 const float near = 500;
                 const float far = 1000;
+                //const float near = 1;
+                //const float far = 9;
                 float aspect_ratio = (float)glControl1.Width / (float)glControl1.Height;
                 OpenTK.Matrix4 projection;
                 projection = OpenTK.Matrix4.CreatePerspectiveFieldOfView(yFov, aspect_ratio, near, far);
@@ -839,7 +848,7 @@ namespace PSMoveSharpTest
             {
                 const float eye_height = 300;
                 OpenTK.Matrix4 lookat;
-                lookat = OpenTK.Matrix4.LookAt(600.0f, 300f, 0.0f,
+                lookat = OpenTK.Matrix4.LookAt(800f, eye_height, 0.0f,
                                                0, 0, 0,
                                                0.0f, 1.0f, 0.0f);
 
