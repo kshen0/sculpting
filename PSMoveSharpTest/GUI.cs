@@ -17,7 +17,9 @@ namespace PSMoveSharpTest
     public partial class MoveSharpGUI : Form
     {
         bool glControlLoaded = false;
-
+        List<Vector3> spheresToDraw = new List<Vector3>();
+        Vector3 prevPos = new Vector3(-9999f, -9999f, -9999f);
+        float minDist = 50;
         public MoveSharpGUI()
         {
             InitializeComponent();
@@ -613,6 +615,7 @@ namespace PSMoveSharpTest
         {
             glControlLoaded = true;
             GL.ClearColor(Color.SkyBlue);
+            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
             SetupViewport();
         }
 
@@ -632,17 +635,55 @@ namespace PSMoveSharpTest
 
             PSMoveSharpState state = Program.moveClient.GetLatestState();
             Vector3 pos = getXYZ(state);
-            float divisor = 4;
-            float drawX = pos.X / divisor;
-            float drawY = pos.Y / divisor;
-            float drawZ = pos.Z / divisor;
+            //Vector3 pos = new Vector3(0f, 0f, 100f);
+            //drawSphereAtLocation(pos, 4.0f);
+
+  
+            //if (prevPos.X == -9999f && prevPos.Y == -9999f && prevPos.Z == -9999f ||
+            //    Vector3.Subtract(pos, prevPos).Length > minDist)
+            {
+                drawSphereAtLocation(pos);
+                //spheresToDraw.Add(pos);
+                prevPos = pos;
+            }
+
+            //drawAllSpheres();
+            
+        }
+
+        private void drawAllSpheres()
+        {
+            foreach (Vector3 sphereLoc in spheresToDraw)
+            {
+                drawSphereAtLocation(sphereLoc);
+            }
+        }
+
+        private void drawSphereAtLocation(Vector3 moveCoords)
+        {
+            Vector3 roomCoords = moveToRoomCoords(moveCoords);
             GL.PushMatrix();
-            GL.Translate(drawX, drawY, drawZ);
-            GL.Scale(15, 15, 15);
-            Console.WriteLine("Drawing at " + drawX + ", " + drawY + ", " + drawZ);
-            DrawSphere(1.0f, 40);
+            GL.Translate(roomCoords.X, roomCoords.Y, roomCoords.Z);
+            float scaleFactor = .1f;
+            GL.Scale(scaleFactor, scaleFactor, scaleFactor);
+            //Console.WriteLine("Drawing at " + drawX + ", " + drawY + ", " + drawZ);
+            DrawSphere(1.0f, 20);
             glControl1.SwapBuffers();
             GL.PopMatrix();
+        }
+
+        // Room is 4m x 3m x 4m (x by y by z)
+        // Expect MoveMe coords to be limited to:
+        // -600 to +600 on x axis
+        // -300 to +300 on y axis
+        // 600 to 1400 on z axis
+        private Vector3 moveToRoomCoords(Vector3 moveCoords)
+        {
+            Vector3 roomCoords = new Vector3(moveCoords);
+            roomCoords.X = -roomCoords.X / 200f;
+            roomCoords.Y = roomCoords.Y / 200f;
+            roomCoords.Z = (roomCoords.Z - 1400f) / (-200f);
+            return roomCoords;
         }
 
         /*
@@ -833,8 +874,8 @@ namespace PSMoveSharpTest
             
             {
                 const float yFov = 0.785398163f; // 45
-                const float near = 500;
-                const float far = 1000;
+                const float near = 0.01f;
+                const float far = 20;
                 //const float near = 1;
                 //const float far = 9;
                 float aspect_ratio = (float)glControl1.Width / (float)glControl1.Height;
@@ -846,9 +887,8 @@ namespace PSMoveSharpTest
             }
 
             {
-                const float eye_height = 300;
                 OpenTK.Matrix4 lookat;
-                lookat = OpenTK.Matrix4.LookAt(800f, eye_height, 0.0f,
+                lookat = OpenTK.Matrix4.LookAt(0f, 0.65f, -2.0f,
                                                0, 0, 0,
                                                0.0f, 1.0f, 0.0f);
 
