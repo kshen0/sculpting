@@ -1,0 +1,158 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="PSMoveSharp.PSMoveSharpNavInfo" Collapsed="true">
+    <Position X="5.25" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAABAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>PSMoveClient.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PSMoveSharp.PSMoveSharpNavPadData" Collapsed="true">
+    <Position X="7" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAhAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>PSMoveClient.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PSMoveSharp.PSMoveSharpSphereState" Collapsed="true">
+    <Position X="8.75" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAIQQABAAAAACA=</HashCode>
+      <FileName>PSMoveClient.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PSMoveSharp.PSMoveSharpCameraState" Collapsed="true">
+    <Position X="10.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAgAAAAAAAAAgAAAAAAQAAAAAAAAQQAAAAAEAAA=</HashCode>
+      <FileName>PSMoveClient.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PSMoveSharp.PSMoveSharpCameraFrameSlice" Collapsed="true">
+    <Position X="5.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAABAAAAAAAAAAAAEAAAAAAAAAAAAAABAAA=</HashCode>
+      <FileName>PSMoveClient.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PSMoveSharp.PSMoveSharpCameraFrameStateCollector" Collapsed="true">
+    <Position X="8.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAQBAKAAAABAAAAAAAEAAAACAAAgGAAAIAAAAQAIw=</HashCode>
+      <FileName>PSMoveClient.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PSMoveSharp.PSMoveSharpCameraFrameState" Collapsed="true">
+    <Position X="7" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAABAAAABAAAAABCIAACgAAQAAABAAAAAA=</HashCode>
+      <FileName>PSMoveClient.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PSMoveSharp.PSMoveSharpState" Collapsed="true">
+    <Position X="10.5" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>QAAAAAAAAACACABAAAAAAAAAEAACJAAAAAIBBAAAAAE=</HashCode>
+      <FileName>PSMoveClient.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PSMoveSharp.PSMoveClient" Collapsed="true">
+    <Position X="1.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAgAAAAAAABAAAAAQQAAYAQAQkAAAAAAAQACAigAQA=</HashCode>
+      <FileName>PSMoveClient.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PSMoveSharp.PSMoveClientThreadedRead" Collapsed="true">
+    <Position X="0.5" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>gAIAAAACAAgAAAFAACAgAAAQAAAhAAAAAABAAAQgAAA=</HashCode>
+      <FileName>PSMoveClient.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PSMoveSharp.PSMoveClientDelegate" Collapsed="true">
+    <Position X="2.75" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>gAIAAAAAAAgEAAEAAAAgAAAQAAAAAAAAAABAAAAgAAA=</HashCode>
+      <FileName>PSMoveClientDelegate.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Struct Name="PSMoveSharp.PSMoveSharpConstants" Collapsed="true">
+    <Position X="10.5" Y="2.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IAJIAAAQBQJACAAQHoAEAjGAAQIgEAAAACBkECAAQCA=</HashCode>
+      <FileName>PSMoveClient.cs</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="PSMoveSharp.Float4" Collapsed="true">
+    <Position X="5.25" Y="2.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAhgAQAAAAA=</HashCode>
+      <FileName>PSMoveClient.cs</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="PSMoveSharp.NetworkWriterHelper" Collapsed="true">
+    <Position X="8.75" Y="2.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAA=</HashCode>
+      <FileName>PSMoveClient.cs</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="PSMoveSharp.NetworkReaderHelper" Collapsed="true">
+    <Position X="7" Y="2.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAQCAAAAAAAAAAAAAAAAAAAAAEAAAEAxgAAAAAA=</HashCode>
+      <FileName>PSMoveClient.cs</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="PSMoveSharp.PSMoveSharpServerConfig" Collapsed="true">
+    <Position X="7" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAgAAAAAAAAAAAAAQAAAQAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>PSMoveClient.cs</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="PSMoveSharp.PSMoveSharpStatus" Collapsed="true">
+    <Position X="8.75" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAhAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAA=</HashCode>
+      <FileName>PSMoveClient.cs</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="PSMoveSharp.PSMoveSharpPadData" Collapsed="true">
+    <Position X="8.75" Y="3.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAgAAAAAAAIAAAAAAAAAAAAAEAAAAAAAAAAAAAA=</HashCode>
+      <FileName>PSMoveClient.cs</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="PSMoveSharp.PSMoveSharpGemState" Collapsed="true">
+    <Position X="5.25" Y="3.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAACAAgCAAAAAAABACABAIAgAgAAAAIAAAQRAAAAACE=</HashCode>
+      <FileName>PSMoveClient.cs</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="PSMoveSharp.PSMoveSharpImageState" Collapsed="true">
+    <Position X="7" Y="3.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAgQAAAAAAAAAIAAAAAAgkAAAAAAABIBCAEAAAA=</HashCode>
+      <FileName>PSMoveClient.cs</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="PSMoveSharp.PSMoveSharpPointerState" Collapsed="true">
+    <Position X="10.5" Y="3.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAQ=</HashCode>
+      <FileName>PSMoveClient.cs</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="PSMoveSharp.PSMoveSharpPositionPointerState" Collapsed="true">
+    <Position X="5.25" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAQ=</HashCode>
+      <FileName>PSMoveClient.cs</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

@@ -2258,6 +2258,7 @@
             // 
             // glControl1
             // 
+            this.glControl1.AutoSize = true;
             this.glControl1.BackColor = System.Drawing.Color.Black;
             this.glControl1.Location = new System.Drawing.Point(8, 15);
             this.glControl1.Name = "glControl1";
@@ -2497,6 +2498,7 @@
             this.tabPageCamera.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.imageBox)).EndInit();
             this.tabPageSculpture.ResumeLayout(false);
+            this.tabPageSculpture.PerformLayout();
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();
             this.ResumeLayout(false);

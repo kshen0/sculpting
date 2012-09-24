@@ -3,3 +3,8 @@ C:\Users\kevin\Documents\moveme-read-only\PSMoveSharp\PSMoveSharp\bin\Debug\PSMo
 C:\Users\kevin\Documents\moveme-read-only\PSMoveSharp\PSMoveSharp\obj\Debug\ResolveAssemblyReference.cache
 C:\Users\kevin\Documents\moveme-read-only\PSMoveSharp\PSMoveSharp\obj\Debug\PSMoveSharp.dll
 C:\Users\kevin\Documents\moveme-read-only\PSMoveSharp\PSMoveSharp\obj\Debug\PSMoveSharp.pdb
+C:\Users\kevin\Documents\moveme-read-only\moveme-read-only\moveme-read-only\PSMoveSharp\PSMoveSharp\bin\Debug\PSMoveSharp.dll
+C:\Users\kevin\Documents\moveme-read-only\moveme-read-only\moveme-read-only\PSMoveSharp\PSMoveSharp\bin\Debug\PSMoveSharp.pdb
+C:\Users\kevin\Documents\moveme-read-only\moveme-read-only\moveme-read-only\PSMoveSharp\PSMoveSharp\obj\Debug\ResolveAssemblyReference.cache
+C:\Users\kevin\Documents\moveme-read-only\moveme-read-only\moveme-read-only\PSMoveSharp\PSMoveSharp\obj\Debug\PSMoveSharp.dll
+C:\Users\kevin\Documents\moveme-read-only\moveme-read-only\moveme-read-only\PSMoveSharp\PSMoveSharp\obj\Debug\PSMoveSharp.pdb

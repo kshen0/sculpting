@@ -17,25 +17,20 @@ namespace PSMoveSharpTest
     public partial class MoveSharpGUI : Form
     {
         bool glControlLoaded = false;
+        bool fullScreen = false;
         List<Vector3> spheresToDraw = new List<Vector3>();
         Vector3 prevPos = new Vector3(-9999f, -9999f, -9999f);
-        float minDist = 50;
+        float minDist = 15;
+        const int windowWidth = 725;
+        const int windowHeight = 581;
+        const int screenWidth = 1920;
+        const int screenHeight = 1200;
+
+
         public MoveSharpGUI()
         {
             InitializeComponent();
             updateGuiDelegate = updateState;
-
-            // ----- start openTK demo ------
-            // The 'using' idiom guarantees proper resource cleanup.
-            // We request 30 UpdateFrame events per second, and unlimited
-            // RenderFrame events (as fast as the computer can handle).
-            /*
-            using (Game game = new Game())
-            {
-                game.Run(30.0);
-            }
-            */
-            // ----- end openTK demo ------
         }
 
         public delegate void ProcessPSMoveStateDelegate();
@@ -113,7 +108,20 @@ namespace PSMoveSharpTest
             
             processed_packet_index = state.packet_index;
 
-            //carve(state);
+            PSMoveSharpGemState selected_gem = state.gemStates[Program.selected_move];
+            if ((selected_gem.pad.digitalbuttons & PSMoveSharpConstants.ctrlSquare) != 0)
+            {
+                if (fullScreen)
+                {
+                    SwitchToWindowed();
+                }
+                else
+                {
+                    SwitchToFullscreen();
+                }
+            }
+
+            processSpherePos(state);
 
             switch ((TabPageIndex) tabControlPosition.SelectedIndex)
             {
@@ -136,6 +144,36 @@ namespace PSMoveSharpTest
                     updateTabPageSculpture(state);
                     break;
             }
+        }
+
+        // Place in the the parent Form
+        public void SwitchToFullscreen()
+        {
+            this.FormBorderStyle = FormBorderStyle.None;
+            this.TopMost = true;
+
+            // Change the resolution of the primary monitor.
+            DisplayDevice.Default.ChangeResolution(screenWidth, screenHeight, 32, 60.0f);
+
+            // Go fullscreen
+            this.WindowState = FormWindowState.Maximized;
+
+            fullScreen = true;
+
+            // Wait for 400ms so we don't toggle window change again while the button is still depressed
+            System.Threading.Thread.Sleep(400);
+        }
+
+        public void SwitchToWindowed()
+        {
+            this.FormBorderStyle = FormBorderStyle.Sizable;
+            this.TopMost = true;
+            this.WindowState = FormWindowState.Normal;
+
+            fullScreen = false;
+
+            // Wait for 400ms so we don't toggle window change again while the button is still depressed
+            System.Threading.Thread.Sleep(400);
         }
 
         private Vector3 getXYZ(PSMoveSharpState state)
@@ -619,6 +657,47 @@ namespace PSMoveSharpTest
             SetupViewport();
         }
 
+        private void SetupViewport()
+        {
+            SwitchToFullscreen();
+            {
+                const float yFov = 0.785398163f; // 45
+                const float near = 0.01f;
+                const float far = 20;
+                float aspect_ratio = (float)glControl1.Width / (float)glControl1.Height;
+                OpenTK.Matrix4 projection;
+                projection = OpenTK.Matrix4.CreatePerspectiveFieldOfView(yFov, aspect_ratio, near, far);
+                GL.MatrixMode(MatrixMode.Projection);
+                GL.LoadIdentity();
+                GL.LoadMatrix(ref projection);
+            }
+
+            {
+                OpenTK.Matrix4 lookat;
+                lookat = OpenTK.Matrix4.LookAt(0f, 0.85f, -2.0f,
+                                               0, 0, 0,
+                                               0.0f, 1.0f, 0.0f);
+
+                GL.MatrixMode(MatrixMode.Modelview);
+                GL.LoadIdentity();
+                GL.LoadMatrix(ref lookat);
+            }
+        }
+
+        private void processSpherePos(PSMoveSharpState state)
+        {
+            PSMoveSharpGemState selected_gem = state.gemStates[Program.selected_move];
+            if ((selected_gem.pad.digitalbuttons & PSMoveSharpConstants.ctrlTrigger) != 0) {
+                Vector3 pos = getXYZ(state);
+                if (prevPos.X == -9999f && prevPos.Y == -9999f && prevPos.Z == -9999f ||
+                    Vector3.Subtract(pos, prevPos).Length > minDist)
+                {
+                    spheresToDraw.Add(pos);
+                    prevPos = pos;
+                }
+            }
+        }
+
         private void updateTabPageSculpture(PSMoveSharpState state)
         {
             glControl1.Invalidate();
@@ -635,20 +714,10 @@ namespace PSMoveSharpTest
 
             PSMoveSharpState state = Program.moveClient.GetLatestState();
             Vector3 pos = getXYZ(state);
-            //Vector3 pos = new Vector3(0f, 0f, 100f);
-            //drawSphereAtLocation(pos, 4.0f);
+            drawSphereAtLocation(pos);
 
-  
-            //if (prevPos.X == -9999f && prevPos.Y == -9999f && prevPos.Z == -9999f ||
-            //    Vector3.Subtract(pos, prevPos).Length > minDist)
-            {
-                drawSphereAtLocation(pos);
-                //spheresToDraw.Add(pos);
-                prevPos = pos;
-            }
-
-            //drawAllSpheres();
-            
+            drawAllSpheres();
+            glControl1.SwapBuffers();
         }
 
         private void drawAllSpheres()
@@ -667,8 +736,7 @@ namespace PSMoveSharpTest
             float scaleFactor = .1f;
             GL.Scale(scaleFactor, scaleFactor, scaleFactor);
             //Console.WriteLine("Drawing at " + drawX + ", " + drawY + ", " + drawZ);
-            DrawSphere(1.0f, 20);
-            glControl1.SwapBuffers();
+            DrawSphere(1.0f, 14);
             GL.PopMatrix();
         }
 
@@ -682,7 +750,7 @@ namespace PSMoveSharpTest
             Vector3 roomCoords = new Vector3(moveCoords);
             roomCoords.X = -roomCoords.X / 200f;
             roomCoords.Y = roomCoords.Y / 200f;
-            roomCoords.Z = (roomCoords.Z - 1400f) / (-200f);
+            roomCoords.Z = roomCoords.Z / 200f;
             return roomCoords;
         }
 
@@ -858,45 +926,6 @@ namespace PSMoveSharpTest
             public Vector2 TexCoord;
             public Vector3 Normal;
             public Vector3 Position;
-        }
-
-        private void SetupViewport()
-        {
-           /*
-            // Orthographic
-            int w = glControl1.Width;
-            int h = glControl1.Height;
-            GL.MatrixMode(MatrixMode.Projection);
-            GL.LoadIdentity();
-            GL.Ortho(0, w, 0, h, -10000, 10000); // Bottom-left corner pixel has coordinate (0, 0)
-            GL.Viewport(0, 0, w, h); // Use all of the glControl painting area
-            */
-            
-            {
-                const float yFov = 0.785398163f; // 45
-                const float near = 0.01f;
-                const float far = 20;
-                //const float near = 1;
-                //const float far = 9;
-                float aspect_ratio = (float)glControl1.Width / (float)glControl1.Height;
-                OpenTK.Matrix4 projection;
-                projection = OpenTK.Matrix4.CreatePerspectiveFieldOfView(yFov, aspect_ratio, near, far);
-                GL.MatrixMode(MatrixMode.Projection);
-                GL.LoadIdentity();
-                GL.LoadMatrix(ref projection);
-            }
-
-            {
-                OpenTK.Matrix4 lookat;
-                lookat = OpenTK.Matrix4.LookAt(0f, 0.65f, -2.0f,
-                                               0, 0, 0,
-                                               0.0f, 1.0f, 0.0f);
-
-                GL.MatrixMode(MatrixMode.Modelview);
-                GL.LoadIdentity();
-                GL.LoadMatrix(ref lookat);
-            }
-            
         }
     }
 
