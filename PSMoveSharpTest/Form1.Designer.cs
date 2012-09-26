@@ -330,8 +330,8 @@
             // splitMain.Panel2
             // 
             this.splitMain.Panel2.Controls.Add(this.tabControlPosition);
-            this.splitMain.Size = new System.Drawing.Size(827, 709);
-            this.splitMain.SplitterDistance = 51;
+            this.splitMain.Size = new System.Drawing.Size(809, 571);
+            this.splitMain.SplitterDistance = 40;
             this.splitMain.TabIndex = 0;
             this.splitMain.TabStop = false;
             // 
@@ -431,8 +431,9 @@
             this.tabControlPosition.Location = new System.Drawing.Point(0, 0);
             this.tabControlPosition.Name = "tabControlPosition";
             this.tabControlPosition.SelectedIndex = 0;
-            this.tabControlPosition.Size = new System.Drawing.Size(827, 654);
+            this.tabControlPosition.Size = new System.Drawing.Size(809, 527);
             this.tabControlPosition.TabIndex = 5;
+            this.tabControlPosition.Selected += new System.Windows.Forms.TabControlEventHandler(this.tabControlPosition_Selected);
             // 
             // tabPageMove
             // 
@@ -449,7 +450,7 @@
             this.tabPageMove.Location = new System.Drawing.Point(4, 22);
             this.tabPageMove.Name = "tabPageMove";
             this.tabPageMove.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageMove.Size = new System.Drawing.Size(819, 628);
+            this.tabPageMove.Size = new System.Drawing.Size(801, 501);
             this.tabPageMove.TabIndex = 0;
             this.tabPageMove.Text = "Move Overview";
             this.tabPageMove.UseVisualStyleBackColor = true;
@@ -1341,7 +1342,7 @@
             this.tabPageNav.Location = new System.Drawing.Point(4, 22);
             this.tabPageNav.Name = "tabPageNav";
             this.tabPageNav.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageNav.Size = new System.Drawing.Size(819, 628);
+            this.tabPageNav.Size = new System.Drawing.Size(801, 501);
             this.tabPageNav.TabIndex = 1;
             this.tabPageNav.Text = "Nav Overview";
             this.tabPageNav.UseVisualStyleBackColor = true;
@@ -1784,7 +1785,7 @@
             this.tabPageLaserPointer.Controls.Add(this.groupBoxLaser);
             this.tabPageLaserPointer.Location = new System.Drawing.Point(4, 22);
             this.tabPageLaserPointer.Name = "tabPageLaserPointer";
-            this.tabPageLaserPointer.Size = new System.Drawing.Size(819, 628);
+            this.tabPageLaserPointer.Size = new System.Drawing.Size(801, 501);
             this.tabPageLaserPointer.TabIndex = 2;
             this.tabPageLaserPointer.Text = "Laser Pointer";
             this.tabPageLaserPointer.UseVisualStyleBackColor = true;
@@ -1991,7 +1992,7 @@
             this.tabPagePositionPointer.Location = new System.Drawing.Point(4, 22);
             this.tabPagePositionPointer.Name = "tabPagePositionPointer";
             this.tabPagePositionPointer.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPagePositionPointer.Size = new System.Drawing.Size(819, 628);
+            this.tabPagePositionPointer.Size = new System.Drawing.Size(801, 501);
             this.tabPagePositionPointer.TabIndex = 3;
             this.tabPagePositionPointer.Text = "Position Pointer";
             this.tabPagePositionPointer.UseVisualStyleBackColor = true;
@@ -2199,7 +2200,7 @@
             this.tabPageCamera.Location = new System.Drawing.Point(4, 22);
             this.tabPageCamera.Name = "tabPageCamera";
             this.tabPageCamera.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageCamera.Size = new System.Drawing.Size(819, 628);
+            this.tabPageCamera.Size = new System.Drawing.Size(801, 501);
             this.tabPageCamera.TabIndex = 4;
             this.tabPageCamera.Text = "Camera";
             this.tabPageCamera.UseVisualStyleBackColor = true;
@@ -2251,7 +2252,7 @@
             this.tabPageSculpture.Location = new System.Drawing.Point(4, 22);
             this.tabPageSculpture.Name = "tabPageSculpture";
             this.tabPageSculpture.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageSculpture.Size = new System.Drawing.Size(819, 628);
+            this.tabPageSculpture.Size = new System.Drawing.Size(801, 501);
             this.tabPageSculpture.TabIndex = 5;
             this.tabPageSculpture.Text = "Sculpture";
             this.tabPageSculpture.UseVisualStyleBackColor = true;
@@ -2259,10 +2260,10 @@
             // glControl1
             // 
             this.glControl1.AutoSize = true;
-            this.glControl1.BackColor = System.Drawing.Color.Black;
-            this.glControl1.Location = new System.Drawing.Point(8, 15);
+            this.glControl1.BackColor = System.Drawing.Color.Transparent;
+            this.glControl1.Location = new System.Drawing.Point(0, 0);
             this.glControl1.Name = "glControl1";
-            this.glControl1.Size = new System.Drawing.Size(800, 600);
+            this.glControl1.Size = new System.Drawing.Size(1920, 1200);
             this.glControl1.TabIndex = 0;
             this.glControl1.VSync = false;
             this.glControl1.Load += new System.EventHandler(this.glControl1_Load_1);
@@ -2447,7 +2448,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(827, 709);
+            this.ClientSize = new System.Drawing.Size(809, 571);
             this.Controls.Add(this.splitMain);
             this.Cursor = System.Windows.Forms.Cursors.Arrow;
             this.DoubleBuffered = true;

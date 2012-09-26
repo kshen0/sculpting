@@ -16,16 +16,17 @@ namespace PSMoveSharpTest
 {
     public partial class MoveSharpGUI : Form
     {
+        Form fullScreenForm;
         bool glControlLoaded = false;
         bool fullScreen = false;
         List<Vector3> spheresToDraw = new List<Vector3>();
         Vector3 prevPos = new Vector3(-9999f, -9999f, -9999f);
         float minDist = 15;
-        const int windowWidth = 725;
-        const int windowHeight = 581;
+        const int glControlWidth = 800;
+        const int glControlHeight = 500;
         const int screenWidth = 1920;
         const int screenHeight = 1200;
-
+        const int scale = screenWidth / glControlWidth;
 
         public MoveSharpGUI()
         {
@@ -121,6 +122,12 @@ namespace PSMoveSharpTest
                 }
             }
 
+            if ((selected_gem.pad.digitalbuttons & PSMoveSharpConstants.ctrlTriangle) != 0)
+            {
+                spheresToDraw = new List<Vector3>();
+                System.Threading.Thread.Sleep(200);
+            }
+
             processSpherePos(state);
 
             switch ((TabPageIndex) tabControlPosition.SelectedIndex)
@@ -149,8 +156,36 @@ namespace PSMoveSharpTest
         // Place in the the parent Form
         public void SwitchToFullscreen()
         {
+            // Force primary monitor resolution to 1920x1200
+            DisplayDevice.Default.ChangeResolution(screenWidth, screenHeight, 32, 60.0f);
+           
+            // Create new maximized, borderless, top-most Form of size 1920x1200
+            fullScreenForm = new Form();
+            fullScreenForm.WindowState = FormWindowState.Maximized;
+            fullScreenForm.TopMost = true;
+            fullScreenForm.FormBorderStyle = FormBorderStyle.None;
+            fullScreenForm.Width = screenWidth;
+            fullScreenForm.Height = screenHeight;
+          
+            // Reparent the GL Control to the new Form
+            this.glControl1.Parent = fullScreenForm;
+
+            // Resize the GL Control
+            glControl1.Width = screenWidth;
+            glControl1.Height = screenHeight;
+
+            // Force call to RecreateHandle()
+            glControl1.CreateControl();
+            SetupViewport();
+
+            // Redraw GL Control
+            glControl1.Invalidate();
+            fullScreenForm.Show();
+            fullScreen = true;
+            System.Threading.Thread.Sleep(400);
+            /*
             this.FormBorderStyle = FormBorderStyle.None;
-            this.TopMost = true;
+            //this.TopMost = true;
 
             // Change the resolution of the primary monitor.
             DisplayDevice.Default.ChangeResolution(screenWidth, screenHeight, 32, 60.0f);
@@ -160,18 +195,29 @@ namespace PSMoveSharpTest
 
             fullScreen = true;
 
+            glControl1.Width = screenWidth;
+            glControl1.Height = screenHeight;
+
             // Wait for 400ms so we don't toggle window change again while the button is still depressed
             System.Threading.Thread.Sleep(400);
+             */
         }
 
         public void SwitchToWindowed()
         {
+            glControl1.CreateControl();
+            glControl1.Parent = this;
+            glControl1.Width = glControlWidth;
+            glControl1.Height = glControlHeight;
+
+            fullScreenForm.Hide();
             this.FormBorderStyle = FormBorderStyle.Sizable;
-            this.TopMost = true;
+            this.TopMost = false;
             this.WindowState = FormWindowState.Normal;
+            this.Show();
 
             fullScreen = false;
-
+            glControl1.Invalidate();
             // Wait for 400ms so we don't toggle window change again while the button is still depressed
             System.Threading.Thread.Sleep(400);
         }
@@ -652,18 +698,18 @@ namespace PSMoveSharpTest
         private void glControl1_Load_1(object sender, EventArgs e)
         {
             glControlLoaded = true;
-            GL.ClearColor(Color.SkyBlue);
+            GL.ClearColor(Color.Transparent);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+            SwitchToFullscreen();
             SetupViewport();
         }
 
         private void SetupViewport()
         {
-            SwitchToFullscreen();
             {
                 const float yFov = 0.785398163f; // 45
                 const float near = 0.01f;
-                const float far = 20;
+                const float far = 2500;
                 float aspect_ratio = (float)glControl1.Width / (float)glControl1.Height;
                 OpenTK.Matrix4 projection;
                 projection = OpenTK.Matrix4.CreatePerspectiveFieldOfView(yFov, aspect_ratio, near, far);
@@ -674,14 +720,45 @@ namespace PSMoveSharpTest
 
             {
                 OpenTK.Matrix4 lookat;
-                lookat = OpenTK.Matrix4.LookAt(0f, 0.85f, -2.0f,
-                                               0, 0, 0,
+                lookat = OpenTK.Matrix4.LookAt(0f, 220f, -180f,
+                                               0f, 175f, 0,
                                                0.0f, 1.0f, 0.0f);
 
                 GL.MatrixMode(MatrixMode.Modelview);
                 GL.LoadIdentity();
                 GL.LoadMatrix(ref lookat);
             }
+
+            // Set up depth buffer
+            GL.Enable(EnableCap.DepthTest);
+            GL.DepthFunc(DepthFunction.Lequal);
+
+            loadBackgroundImage();
+            
+        }
+
+        private void loadBackgroundImage()
+        {
+            System.Drawing.Bitmap bmp = new System.Drawing.Bitmap("C:/Users/kevin/Documents/moveme-read-only/moveme-read-only/moveme-read-only/PSMoveSharp/PSMoveSharpTest/photobg.jpg");
+            int texture;
+            
+            GL.Enable(EnableCap.Texture2D);
+
+            GL.Hint(HintTarget.PerspectiveCorrectionHint, HintMode.Nicest);
+
+            GL.GenTextures(1, out texture);
+            GL.BindTexture(TextureTarget.Texture2D, texture);
+
+            System.Drawing.Imaging.BitmapData data = bmp.LockBits(new System.Drawing.Rectangle(0, 0, bmp.Width, bmp.Height),
+                System.Drawing.Imaging.ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, data.Width, data.Height, 0,
+                OpenTK.Graphics.OpenGL.PixelFormat.Bgra, PixelType.UnsignedByte, data.Scan0);
+
+            bmp.UnlockBits(data);
+
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
         }
 
         private void processSpherePos(PSMoveSharpState state)
@@ -715,7 +792,11 @@ namespace PSMoveSharpTest
             PSMoveSharpState state = Program.moveClient.GetLatestState();
             Vector3 pos = getXYZ(state);
             drawSphereAtLocation(pos);
-
+            GL.PushMatrix();
+            //GL.Translate(new Vector3(-2f, 0, 0));
+            GL.Scale(new Vector3(25f, 25f, 25f));
+            DrawSphere(1.0f, 14);
+            GL.PopMatrix();
             drawAllSpheres();
             glControl1.SwapBuffers();
         }
@@ -730,14 +811,26 @@ namespace PSMoveSharpTest
 
         private void drawSphereAtLocation(Vector3 moveCoords)
         {
-            Vector3 roomCoords = moveToRoomCoords(moveCoords);
             GL.PushMatrix();
-            GL.Translate(roomCoords.X, roomCoords.Y, roomCoords.Z);
-            float scaleFactor = .1f;
+            GL.Translate(-moveCoords.X, moveCoords.Y, moveCoords.Z);
+            float scaleFactor = 15f;
             GL.Scale(scaleFactor, scaleFactor, scaleFactor);
-            //Console.WriteLine("Drawing at " + drawX + ", " + drawY + ", " + drawZ);
             DrawSphere(1.0f, 14);
             GL.PopMatrix();
+            /*
+            Vector3 roomCoords = moveToRoomCoords(moveCoords);
+            if (fullScreen)
+            {
+                //Vector3.Multiply(roomCoords, scale);
+                roomCoords = Vector3.Multiply(roomCoords, scale);
+            }
+            GL.PushMatrix();
+            GL.Translate(roomCoords.X, roomCoords.Y, roomCoords.Z);
+            float scaleFactor = 15f;
+            GL.Scale(scaleFactor, scaleFactor, scaleFactor);
+            DrawSphere(1.0f, 14);
+            GL.PopMatrix();
+            */
         }
 
         // Room is 4m x 3m x 4m (x by y by z)
@@ -748,124 +841,16 @@ namespace PSMoveSharpTest
         private Vector3 moveToRoomCoords(Vector3 moveCoords)
         {
             Vector3 roomCoords = new Vector3(moveCoords);
+            /*
             roomCoords.X = -roomCoords.X / 200f;
             roomCoords.Y = roomCoords.Y / 200f;
             roomCoords.Z = roomCoords.Z / 200f;
+            */
+            roomCoords.X = -roomCoords.X;
+            roomCoords.Y = roomCoords.Y / 1f;
+            roomCoords.Z = roomCoords.Z / 1f;
             return roomCoords;
         }
-
-        /*
-        private void drawSphere()
-        {
-            int rings = 20;
-            int segments = 20;
-            uint[] Indices = getSphereIndices(rings, segments);
-            Vertex[] Vertices = CreateSphere(1.0f, rings, segments);
-            Color[] colors = { Color.Purple, Color.Yellow, Color.Red, Color.Blue, Color.Green, Color.Magenta, Color.White, Color.Gray, Color.Gold, Color.Pink };
-
-            GL.MatrixMode(MatrixMode.Modelview);
-            //GL.LoadIdentity();
-            //GL.Scale(new Vector3(100, 100, 100));
-            //GL.Translate(new Vector3(1.5f, 1.5f, -1.0f)); // compounds on the Scale function, so actually translates 200
-
-            GL.Begin(BeginMode.Triangles);
-            int colorNum = 0;
-            int trianglesPerSegment = 2 + 2 * (rings - 3);
-            int triangleCount = 0;
-            GL.Color3(Color.Orange);
-            for (int i = 0; i < Indices.Length; i += 3)
-            {
-                if (triangleCount == trianglesPerSegment)
-                {
-                    triangleCount = 0;
-                    GL.Color3(colors[colorNum]);
-                    colorNum++;
-                    //Console.Write("Strip now being drawn in color: " + colors[colorNum].Name + "\n");
-                }
-                // GL.Color3(colors[colorNum]);
-                Vertex v1 = Vertices[Indices[i]];
-                Vertex v2 = Vertices[Indices[i + 1]];
-                Vertex v3 = Vertices[Indices[i + 2]];
-
-                GL.Normal3(v1.Normal);
-                GL.Vertex3(v1.Position);
-                GL.Normal3(v2.Normal);
-                GL.Vertex3(v2.Position);
-                GL.Normal3(v3.Normal);
-                GL.Vertex3(v3.Position);
-                triangleCount++;
-                //colorNum = (colorNum + 1) % colors.Length;
-            }
-            GL.End();
-
-            // draw triangle
-            //GL.Begin(BeginMode.Triangles);
-            //GL.Color3(Color.Orange);
-            //GL.Vertex3(0, 0, -2);
-            //GL.Vertex3(0, 0, 2);
-            //GL.Vertex3(0, 2, 0);
-            //GL.End();
-        }
-
-        private Vertex[] CreateSphere(float radius, int rings, int segments)
-        {
-            Vertex[] sphere = new Vertex[rings * segments];
-            int i = 0;
-            for (double y = 0; y < rings; y++)
-            {
-                for (double x = 0; x < segments; x++)
-                {
-                    double phi = (y / (rings - 1)) * Math.PI;
-                    double theta = (x / (segments - 0)) * 2 * Math.PI;
-                    float X = (float)(radius * Math.Sin(phi) * Math.Cos(theta));
-                    float Y = (float)(radius * Math.Cos(phi));
-                    float Z = (float)(radius * Math.Sin(phi) * Math.Sin(theta));
-                    sphere[i].Position = new Vector3(X, Y, Z);
-                    sphere[i].Normal = new Vector3(X, Y, Z);
-                    i++;
-                }
-            }
-            return sphere;
-        }
-
-        // segments refers to the number of longitude lines
-        private uint[] getSphereIndices(int rings, int segments)
-        {
-            int trianglesPerSegment = 2 + 2 * (rings - 3);
-            int indicesSize = 3 * trianglesPerSegment * (segments / 2);
-            uint[] indices = new uint[indicesSize];
-
-            int i = 0;
-            bool add1 = false;
-            for (uint seg = 0; seg < (segments / 2); seg++)
-            {
-                uint a = seg * 2;
-                uint b = (uint)(a + segments);
-                uint c = b + 1;
-                for (uint triangle = 0; triangle < 2 + 2 * (rings - 3); triangle++)
-                {
-                    indices[i] = a;
-                    indices[i + 1] = b;
-                    indices[i + 2] = c;
-                    i += 3;
-                    uint newC = 999999;
-                    if (add1)
-                    {
-                        newC = c + 1;
-                    }
-                    else
-                    {
-                        newC = (uint)(c + (segments - 1));
-                    }
-                    add1 = !add1;
-                    a = b;
-                    b = c;
-                    c = newC;
-                }
-            }
-            return indices;
-        }
-        */
 
         private void DrawSphere(float Radius, uint Precision)
         {
@@ -926,6 +911,11 @@ namespace PSMoveSharpTest
             public Vector2 TexCoord;
             public Vector3 Normal;
             public Vector3 Position;
+        }
+
+        private void tabControlPosition_Selected(object sender, TabControlEventArgs e)
+        {
+            //SwitchToFullscreen();
         }
     }
 
