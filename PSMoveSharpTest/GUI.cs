@@ -19,6 +19,8 @@ namespace PSMoveSharpTest
         Form fullScreenForm;
         bool glControlLoaded = false;
         bool fullScreen = false;
+        bool textureBound = false;
+
         List<Vector3> spheresToDraw = new List<Vector3>();
         Vector3 prevPos = new Vector3(-9999f, -9999f, -9999f);
         float minDist = 15;
@@ -733,15 +735,18 @@ namespace PSMoveSharpTest
             GL.Enable(EnableCap.DepthTest);
             GL.DepthFunc(DepthFunction.Lequal);
 
-            loadBackgroundImage();
-            
+            // Prepare texture
+            if (!textureBound)
+            {
+                bindTexture();
+            }
         }
 
-        private void loadBackgroundImage()
+        private void bindTexture()
         {
             System.Drawing.Bitmap bmp = new System.Drawing.Bitmap("C:/Users/kevin/Documents/moveme-read-only/moveme-read-only/moveme-read-only/PSMoveSharp/PSMoveSharpTest/photobg.jpg");
             int texture;
-            
+
             GL.Enable(EnableCap.Texture2D);
 
             GL.Hint(HintTarget.PerspectiveCorrectionHint, HintMode.Nicest);
@@ -759,6 +764,42 @@ namespace PSMoveSharpTest
 
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
+
+            GL.BindTexture(TextureTarget.Texture2D, texture);
+
+            textureBound = true;
+        }
+
+        private void loadBackgroundImage()
+        {
+            /*
+            GL.MatrixMode(MatrixMode.Modelview);
+
+            GL.Begin(BeginMode.Quads);
+            GL.LoadIdentity();
+            GL.Color3(Color.Yellow);
+            GL.Vertex3(-700f, -450f, 2000f);
+            GL.Vertex3(700f, -450f, 2000f);
+            GL.Vertex3(700f, 450f, 2000f);
+            GL.Vertex3(-700f, 450f, 2000f);
+
+            GL.End();
+            */
+            GL.MatrixMode(MatrixMode.Modelview);
+            GL.Begin(BeginMode.Quads);
+
+            float w = 1800;
+            float h = 1000;
+            float d = 2000;
+            float offset = 400;
+
+            GL.TexCoord2(0.0f, 1.0f); GL.Vertex3(-w, -h - offset, d);
+            GL.TexCoord2(1.0f, 1.0f); GL.Vertex3(w, -h - offset, d);
+            GL.TexCoord2(1.0f, 0.0f); GL.Vertex3(w, h - offset, d);
+            GL.TexCoord2(0.0f, 0.0f); GL.Vertex3(-w, h - offset, d);
+
+            GL.End();
+            
         }
 
         private void processSpherePos(PSMoveSharpState state)
@@ -788,7 +829,7 @@ namespace PSMoveSharpTest
             }
 
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-
+            loadBackgroundImage();
             PSMoveSharpState state = Program.moveClient.GetLatestState();
             Vector3 pos = getXYZ(state);
             drawSphereAtLocation(pos);
