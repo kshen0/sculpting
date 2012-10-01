@@ -156,7 +156,6 @@
             this.checkBoxNav4 = new System.Windows.Forms.CheckBox();
             this.checkBoxNav5 = new System.Windows.Forms.CheckBox();
             this.tabPageLaserPointer = new System.Windows.Forms.TabPage();
-            this.pointerDisplayControlLaser = new PSMoveSharpTest.PointerDisplayControl();
             this.groupBoxLaser = new System.Windows.Forms.GroupBox();
             this.tableLayoutPanelLaser = new System.Windows.Forms.TableLayoutPanel();
             this.labelLaserPos4ValY = new System.Windows.Forms.Label();
@@ -174,7 +173,6 @@
             this.checkBoxLaser3 = new System.Windows.Forms.CheckBox();
             this.checkBoxLaser4 = new System.Windows.Forms.CheckBox();
             this.tabPagePositionPointer = new System.Windows.Forms.TabPage();
-            this.pointerDisplayControlPosition = new PSMoveSharpTest.PointerDisplayControl();
             this.groupBoxPosition = new System.Windows.Forms.GroupBox();
             this.tableLayoutPanelPosition = new System.Windows.Forms.TableLayoutPanel();
             this.labelPositionPos4ValY = new System.Windows.Forms.Label();
@@ -212,6 +210,8 @@
             this.checkBox2 = new System.Windows.Forms.CheckBox();
             this.checkBox3 = new System.Windows.Forms.CheckBox();
             this.checkBox4 = new System.Windows.Forms.CheckBox();
+            this.pointerDisplayControlLaser = new PSMoveSharpTest.PointerDisplayControl();
+            this.pointerDisplayControlPosition = new PSMoveSharpTest.PointerDisplayControl();
             this.tabPage1.SuspendLayout();
             this.splitMain.Panel1.SuspendLayout();
             this.splitMain.Panel2.SuspendLayout();
@@ -433,7 +433,6 @@
             this.tabControlPosition.SelectedIndex = 0;
             this.tabControlPosition.Size = new System.Drawing.Size(809, 527);
             this.tabControlPosition.TabIndex = 5;
-            this.tabControlPosition.Selected += new System.Windows.Forms.TabControlEventHandler(this.tabControlPosition_Selected);
             // 
             // tabPageMove
             // 
@@ -1790,16 +1789,6 @@
             this.tabPageLaserPointer.Text = "Laser Pointer";
             this.tabPageLaserPointer.UseVisualStyleBackColor = true;
             // 
-            // pointerDisplayControlLaser
-            // 
-            this.pointerDisplayControlLaser.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.pointerDisplayControlLaser.Location = new System.Drawing.Point(280, 3);
-            this.pointerDisplayControlLaser.Name = "pointerDisplayControlLaser";
-            this.pointerDisplayControlLaser.Size = new System.Drawing.Size(426, 414);
-            this.pointerDisplayControlLaser.TabIndex = 12;
-            // 
             // groupBoxLaser
             // 
             this.groupBoxLaser.Controls.Add(this.tableLayoutPanelLaser);
@@ -1996,16 +1985,6 @@
             this.tabPagePositionPointer.TabIndex = 3;
             this.tabPagePositionPointer.Text = "Position Pointer";
             this.tabPagePositionPointer.UseVisualStyleBackColor = true;
-            // 
-            // pointerDisplayControlPosition
-            // 
-            this.pointerDisplayControlPosition.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.pointerDisplayControlPosition.Location = new System.Drawing.Point(280, 3);
-            this.pointerDisplayControlPosition.Name = "pointerDisplayControlPosition";
-            this.pointerDisplayControlPosition.Size = new System.Drawing.Size(426, 414);
-            this.pointerDisplayControlPosition.TabIndex = 24;
             // 
             // groupBoxPosition
             // 
@@ -2443,6 +2422,26 @@
             this.checkBox4.TabIndex = 29;
             this.checkBox4.Text = "4";
             this.checkBox4.UseVisualStyleBackColor = true;
+            // 
+            // pointerDisplayControlLaser
+            // 
+            this.pointerDisplayControlLaser.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.pointerDisplayControlLaser.Location = new System.Drawing.Point(280, 3);
+            this.pointerDisplayControlLaser.Name = "pointerDisplayControlLaser";
+            this.pointerDisplayControlLaser.Size = new System.Drawing.Size(426, 414);
+            this.pointerDisplayControlLaser.TabIndex = 12;
+            // 
+            // pointerDisplayControlPosition
+            // 
+            this.pointerDisplayControlPosition.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.pointerDisplayControlPosition.Location = new System.Drawing.Point(280, 3);
+            this.pointerDisplayControlPosition.Name = "pointerDisplayControlPosition";
+            this.pointerDisplayControlPosition.Size = new System.Drawing.Size(426, 414);
+            this.pointerDisplayControlPosition.TabIndex = 24;
             // 
             // MoveSharpGUI
             // 

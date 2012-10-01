@@ -30,6 +30,7 @@ namespace PSMoveSharpTest
         const int glControlWidth = 800;
         const int glControlHeight = 500;
         const int screenWidth = 1920;
+        //const int screenWidth = 1600;
         const int screenHeight = 1200;
         const int scale = screenWidth / glControlWidth;
         const float ROTATION = 0.0872664626f;
@@ -137,13 +138,13 @@ namespace PSMoveSharpTest
             if ((selected_gem.pad.digitalbuttons & PSMoveSharpConstants.ctrlCircle) != 0)
             {
                 tableRotation += ROTATION; // rads
-                rotateSpheres((+1));
+                rotateSpheres((-1));
             }
 
             if ((selected_gem.pad.digitalbuttons & PSMoveSharpConstants.ctrlCross) != 0)
             {
                 tableRotation -= ROTATION; // rads
-                rotateSpheres((-1));
+                rotateSpheres((+1));
             }
 
             processSpherePos(state);
@@ -715,10 +716,18 @@ namespace PSMoveSharpTest
 
         private void glControl1_Load_1(object sender, EventArgs e)
         {
+            if (Program.image_paused)
+            {
+                Program.moveClient.CameraFrameResume();
+                Program.image_paused = false;
+                //Program.moveClient.ForceRGB(0, 1.0f, 0.0f, 0.0f);
+            }
+
             glControlLoaded = true;
             GL.ClearColor(Color.Transparent);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
             SwitchToFullscreen();
+            
             SetupViewport();
         }
 
@@ -754,7 +763,7 @@ namespace PSMoveSharpTest
             // Prepare texture
             if (!textureBound)
             {
-                bindTexture();
+                //bindTexture();
             }
         }
 
@@ -792,9 +801,8 @@ namespace PSMoveSharpTest
             //Console.WriteLine("loading texture");
             //System.Drawing.Bitmap bmp = (System.Drawing.Bitmap)(img);
             //System.Drawing.Image image = (System.Drawing.Image)(new System.Drawing.Bitmap("C:/Users/kevin/Documents/moveme-read-only/moveme-read-only/moveme-read-only/PSMoveSharp/PSMoveSharpTest/photobg.jpg"));
-            //bmp = new System.Drawing.Bitmap(image);
+            //System.Drawing.Bitmap picbmp = new System.Drawing.Bitmap(image);
             int texture;
-
             //GL.Enable(EnableCap.Texture2D);
 
             GL.Hint(HintTarget.PerspectiveCorrectionHint, HintMode.Nicest);
@@ -852,42 +860,26 @@ namespace PSMoveSharpTest
         */
         // Called from the general paint function
         private void paintBackground()
-        {
-            /*
-            GL.MatrixMode(MatrixMode.Modelview);
-
-            GL.Begin(BeginMode.Quads);
-            GL.LoadIdentity();
-            GL.Color3(Color.Yellow);
-            GL.Vertex3(-700f, -450f, 2000f);
-            GL.Vertex3(700f, -450f, 2000f);
-            GL.Vertex3(700f, 450f, 2000f);
-            GL.Vertex3(-700f, 450f, 2000f);
-
-            GL.End();
-            */
-            
-            PSMoveSharpCameraFrameState camera_frame_state = Program.moveClient.GetLatestCameraFrameState();
-            camera_frame_state.camera_frame_state_rwl.AcquireReaderLock(-1);
-            PSMoveSharpState dummy_state = new PSMoveSharpState();
-            System.Drawing.Bitmap cameraFrame = camera_frame_state.GetCameraFrameAndStateBmp(ref dummy_state);
-            camera_frame_state.camera_frame_state_rwl.ReleaseReaderLock();
-
-            //loadFrameTexture(cameraFrame);
-            
+        {           
             Console.WriteLine("painting background");
             GL.MatrixMode(MatrixMode.Modelview);
             GL.Begin(BeginMode.Quads);
 
-            float w = 1800;
-            float h = 1000;
+            float w = 3200;
+            float h = 2400;
             float d = 2000;
             float offset = 400;
 
+            GL.TexCoord2(1.0f, 1.0f); GL.Vertex3(-w, -h - offset, d);
+            GL.TexCoord2(0.0f, 1.0f); GL.Vertex3(w, -h - offset, d);
+            GL.TexCoord2(0.0f, 0.0f); GL.Vertex3(w, h - offset, d);
+            GL.TexCoord2(1.0f, 0.0f); GL.Vertex3(-w, h - offset, d);
+            /*
             GL.TexCoord2(0.0f, 1.0f); GL.Vertex3(-w, -h - offset, d);
             GL.TexCoord2(1.0f, 1.0f); GL.Vertex3(w, -h - offset, d);
             GL.TexCoord2(1.0f, 0.0f); GL.Vertex3(w, h - offset, d);
             GL.TexCoord2(0.0f, 0.0f); GL.Vertex3(-w, h - offset, d);
+             * */
 
             GL.End();
         }
@@ -910,10 +902,10 @@ namespace PSMoveSharpTest
         {
             camera_frame_state.camera_frame_state_rwl.AcquireReaderLock(-1);
             PSMoveSharpState dummy_state = new PSMoveSharpState();
-            System.Drawing.Image cameraFrame = camera_frame_state.GetCameraFrameAndState(ref dummy_state);
+            System.Drawing.Bitmap cameraFrame = camera_frame_state.GetCameraFrameAndStateBmp(ref dummy_state);
             camera_frame_state.camera_frame_state_rwl.ReleaseReaderLock();
 
-            //loadFrameTexture(cameraFrame);
+            loadFrameTexture(cameraFrame);
             glControl1.Invalidate();
         }
 
@@ -1153,11 +1145,6 @@ namespace PSMoveSharpTest
             public Vector2 TexCoord;
             public Vector3 Normal;
             public Vector3 Position;
-        }
-
-        private void tabControlPosition_Selected(object sender, TabControlEventArgs e)
-        {
-            //SwitchToFullscreen();
         }
     }
 
