@@ -21,6 +21,9 @@ namespace PSMoveSharpTest
         bool fullScreen = false;
         bool textureBound = false;
 
+        float tableRotation = 0;
+        Vector3 tableCenter = new Vector3(0, 0, 900f);
+
         List<Vector3> spheresToDraw = new List<Vector3>();
         Vector3 prevPos = new Vector3(-9999f, -9999f, -9999f);
         float minDist = 15;
@@ -29,6 +32,7 @@ namespace PSMoveSharpTest
         const int screenWidth = 1920;
         const int screenHeight = 1200;
         const int scale = screenWidth / glControlWidth;
+        const float ROTATION = 0.0872664626f;
 
         public MoveSharpGUI()
         {
@@ -130,6 +134,18 @@ namespace PSMoveSharpTest
                 System.Threading.Thread.Sleep(200);
             }
 
+            if ((selected_gem.pad.digitalbuttons & PSMoveSharpConstants.ctrlCircle) != 0)
+            {
+                tableRotation += ROTATION; // rads
+                rotateSpheres((+1));
+            }
+
+            if ((selected_gem.pad.digitalbuttons & PSMoveSharpConstants.ctrlCross) != 0)
+            {
+                tableRotation -= ROTATION; // rads
+                rotateSpheres((-1));
+            }
+
             processSpherePos(state);
 
             switch ((TabPageIndex) tabControlPosition.SelectedIndex)
@@ -150,7 +166,7 @@ namespace PSMoveSharpTest
                     updateTabPageCamera(camera_frame_state);
                     break;
                 case TabPageIndex.Sculpture:
-                    updateTabPageSculpture(state);
+                    updateTabPageSculpture(state, camera_frame_state);
                     break;
             }
         }
@@ -164,7 +180,7 @@ namespace PSMoveSharpTest
             // Create new maximized, borderless, top-most Form of size 1920x1200
             fullScreenForm = new Form();
             fullScreenForm.WindowState = FormWindowState.Maximized;
-            fullScreenForm.TopMost = true;
+            //fullScreenForm.TopMost = true;
             fullScreenForm.FormBorderStyle = FormBorderStyle.None;
             fullScreenForm.Width = screenWidth;
             fullScreenForm.Height = screenHeight;
@@ -770,7 +786,72 @@ namespace PSMoveSharpTest
             textureBound = true;
         }
 
-        private void loadBackgroundImage()
+        // Called each time the program updates its state
+        private void loadFrameTexture(System.Drawing.Bitmap bmp)
+        {
+            //Console.WriteLine("loading texture");
+            //System.Drawing.Bitmap bmp = (System.Drawing.Bitmap)(img);
+            //System.Drawing.Image image = (System.Drawing.Image)(new System.Drawing.Bitmap("C:/Users/kevin/Documents/moveme-read-only/moveme-read-only/moveme-read-only/PSMoveSharp/PSMoveSharpTest/photobg.jpg"));
+            //bmp = new System.Drawing.Bitmap(image);
+            int texture;
+
+            //GL.Enable(EnableCap.Texture2D);
+
+            GL.Hint(HintTarget.PerspectiveCorrectionHint, HintMode.Nicest);
+
+            GL.GenTextures(1, out texture);
+            GL.BindTexture(TextureTarget.Texture2D, texture);
+
+            System.Drawing.Imaging.BitmapData data = bmp.LockBits(new System.Drawing.Rectangle(0, 0, bmp.Width, bmp.Height),
+                System.Drawing.Imaging.ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, data.Width, data.Height, 0,
+                OpenTK.Graphics.OpenGL.PixelFormat.Bgra, PixelType.UnsignedByte, data.Scan0);
+
+            bmp.UnlockBits(data);
+
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
+
+            GL.BindTexture(TextureTarget.Texture2D, texture);
+
+            textureBound = true;
+        }
+        /*
+        // Called each time the program updates its state
+        private void loadFrameTexture(System.Drawing.Image img)
+        {
+            Console.WriteLine("loading texture");
+            System.Drawing.Bitmap bmp = (System.Drawing.Bitmap)(img);
+            //System.Drawing.Image image = (System.Drawing.Image)(new System.Drawing.Bitmap("C:/Users/kevin/Documents/moveme-read-only/moveme-read-only/moveme-read-only/PSMoveSharp/PSMoveSharpTest/banana.jpg"));
+            //System.Drawing.Bitmap bmp = new System.Drawing.Bitmap(image);
+            int texture;
+
+            //GL.Enable(EnableCap.Texture2D);
+
+            GL.Hint(HintTarget.PerspectiveCorrectionHint, HintMode.Nicest);
+
+            GL.GenTextures(1, out texture);
+            GL.BindTexture(TextureTarget.Texture2D, texture);
+
+            System.Drawing.Imaging.BitmapData data = bmp.LockBits(new System.Drawing.Rectangle(0, 0, bmp.Width, bmp.Height),
+                System.Drawing.Imaging.ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, data.Width, data.Height, 0,
+                OpenTK.Graphics.OpenGL.PixelFormat.Bgra, PixelType.UnsignedByte, data.Scan0);
+
+            bmp.UnlockBits(data);
+
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
+
+            GL.BindTexture(TextureTarget.Texture2D, texture);
+
+            textureBound = true;
+        }
+        */
+        // Called from the general paint function
+        private void paintBackground()
         {
             /*
             GL.MatrixMode(MatrixMode.Modelview);
@@ -785,6 +866,16 @@ namespace PSMoveSharpTest
 
             GL.End();
             */
+            
+            PSMoveSharpCameraFrameState camera_frame_state = Program.moveClient.GetLatestCameraFrameState();
+            camera_frame_state.camera_frame_state_rwl.AcquireReaderLock(-1);
+            PSMoveSharpState dummy_state = new PSMoveSharpState();
+            System.Drawing.Bitmap cameraFrame = camera_frame_state.GetCameraFrameAndStateBmp(ref dummy_state);
+            camera_frame_state.camera_frame_state_rwl.ReleaseReaderLock();
+
+            //loadFrameTexture(cameraFrame);
+            
+            Console.WriteLine("painting background");
             GL.MatrixMode(MatrixMode.Modelview);
             GL.Begin(BeginMode.Quads);
 
@@ -799,7 +890,6 @@ namespace PSMoveSharpTest
             GL.TexCoord2(0.0f, 0.0f); GL.Vertex3(-w, h - offset, d);
 
             GL.End();
-            
         }
 
         private void processSpherePos(PSMoveSharpState state)
@@ -816,8 +906,14 @@ namespace PSMoveSharpTest
             }
         }
 
-        private void updateTabPageSculpture(PSMoveSharpState state)
+        private void updateTabPageSculpture(PSMoveSharpState state, PSMoveSharpCameraFrameState camera_frame_state)
         {
+            camera_frame_state.camera_frame_state_rwl.AcquireReaderLock(-1);
+            PSMoveSharpState dummy_state = new PSMoveSharpState();
+            System.Drawing.Image cameraFrame = camera_frame_state.GetCameraFrameAndState(ref dummy_state);
+            camera_frame_state.camera_frame_state_rwl.ReleaseReaderLock();
+
+            //loadFrameTexture(cameraFrame);
             glControl1.Invalidate();
         }
 
@@ -829,7 +925,29 @@ namespace PSMoveSharpTest
             }
 
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-            loadBackgroundImage();
+
+            GL.Enable(EnableCap.Texture2D);
+            paintBackground();
+            GL.Disable(EnableCap.Texture2D);
+
+            /*
+            Vector3 p2 = new Vector3(0, -375f, 900f);
+            GL.MatrixMode(MatrixMode.Modelview);
+            GL.PushMatrix();
+            GL.Translate(Vector3.Multiply(p2, -1));
+            Vector3 rotated = new Vector3(
+                p2.Z * (float)Math.Sin(tableRotation) + p2.X * (float)Math.Cos(tableRotation),
+                p2.Y,
+                p2.Z * (float)Math.Cos(tableRotation) - p2.X * (float)Math.Sin(tableRotation));
+                        
+            GL.Translate(rotated);
+            drawCylinder(200f, new Vector3(0, -400f, 900f), p2, 20);
+            GL.PopMatrix();
+            */
+            Vector3 p1 = new Vector3(tableCenter.X, -400f, tableCenter.Z);
+            Vector3 p2 = new Vector3(tableCenter.X, -375f, tableCenter.Z);
+            drawCylinder(200f, p1, p2, 20);
+
             PSMoveSharpState state = Program.moveClient.GetLatestState();
             Vector3 pos = getXYZ(state);
             drawSphereAtLocation(pos);
@@ -840,6 +958,94 @@ namespace PSMoveSharpTest
             GL.PopMatrix();
             drawAllSpheres();
             glControl1.SwapBuffers();
+        }
+
+        private void drawCylinder(float radius, Vector3 p1, Vector3 p2, int facets)
+        {
+            Vector3 axis = Vector3.Subtract(p2, p1);
+            axis = Vector3.Normalize(axis);
+            Vector3 nonColinear = Vector3.Add(axis, new Vector3(1.0f, 0, 1f));
+
+            Vector3 a = Vector3.Cross(axis, nonColinear);
+            Vector3 b = Vector3.Cross(a, axis);
+            a = Vector3.Normalize(a);
+            b = Vector3.Normalize(b);
+
+            float TWOPI = (float)Math.PI * 2.0f;
+            GL.Begin(BeginMode.Triangles);
+
+            Color[] colorList = { Color.Purple, Color.Blue, Color.Green, Color.Yellow, Color.Orange, Color.Red };
+            int colorPos = 0;
+            for (int i = 0; i < facets; i++)
+            {
+                GL.Color3(colorList[colorPos]);
+                float theta1 = i * TWOPI / facets;
+                float theta2 = (i + 1) * TWOPI / facets;
+
+                Vector3 q0 = new Vector3(
+                    p1.X + radius * (float)Math.Cos(theta1) * a.X + radius * (float)Math.Sin(theta1) * b.X,
+                    p1.Y + radius * (float)Math.Cos(theta1) * a.Y + radius * (float)Math.Sin(theta1) * b.Y,
+                    p1.Z + radius * (float)Math.Cos(theta1) * a.Z + radius * (float)Math.Sin(theta1) * b.Z);
+
+                Vector3 q1 = new Vector3(
+                    p2.X + radius * (float)Math.Cos(theta1) * a.X + radius * (float)Math.Sin(theta1) * b.X,
+                    p2.Y + radius * (float)Math.Cos(theta1) * a.Y + radius * (float)Math.Sin(theta1) * b.Y,
+                    p2.Z + radius * (float)Math.Cos(theta1) * a.Z + radius * (float)Math.Sin(theta1) * b.Z);
+                
+                Vector3 q2 = new Vector3(
+                    p2.X + radius * (float)Math.Cos(theta2) * a.X + radius * (float)Math.Sin(theta2) * b.X,
+                    p2.Y + radius * (float)Math.Cos(theta2) * a.Y + radius * (float)Math.Sin(theta2) * b.Y,
+                    p2.Z + radius * (float)Math.Cos(theta2) * a.Z + radius * (float)Math.Sin(theta2) * b.Z);
+
+                Vector3 q3 = new Vector3(
+                    p1.X + radius * (float)Math.Cos(theta2) * a.X + radius * (float)Math.Sin(theta2) * b.X,
+                    p1.Y + radius * (float)Math.Cos(theta2) * a.Y + radius * (float)Math.Sin(theta2) * b.Y,
+                    p1.Z + radius * (float)Math.Cos(theta2) * a.Z + radius * (float)Math.Sin(theta2) * b.Z);
+
+                q0 = rotatePoint(q0, p1, tableRotation);
+                q1 = rotatePoint(q1, p2, tableRotation);
+                q2 = rotatePoint(q2, p2, tableRotation);
+                q3 = rotatePoint(q3, p1, tableRotation);
+
+                // Side facet
+                GL.Vertex3(q3);
+                GL.Vertex3(q0);
+                GL.Vertex3(q2);
+
+                GL.Vertex3(q0);
+                GL.Vertex3(q2);
+                GL.Vertex3(q1);
+
+                // Top facet
+                GL.Vertex3(q1);
+                GL.Vertex3(q2);
+                GL.Vertex3(p2);
+
+                colorPos = (colorPos + 1) % colorList.Length;
+            }
+            GL.End();
+        }
+
+        private Vector3 rotatePoint(Vector3 p, Vector3 center, float theta)
+        {
+            p = Vector3.Subtract(p, center);
+            Vector3 rotated = new Vector3(
+            p.Z * (float)Math.Sin(theta) + p.X * (float)Math.Cos(theta),
+            p.Y,
+            p.Z * (float)Math.Cos(theta) - p.X * (float)Math.Sin(theta));
+            rotated = Vector3.Add(rotated, center);
+            return rotated;
+        }
+
+        // rotate physical location of spheres about center of turntable
+        private void rotateSpheres(int dir)
+        {
+            List<Vector3> rotatedSpheres = new List<Vector3>();
+            foreach (Vector3 sphereLoc in spheresToDraw)
+            {
+                rotatedSpheres.Add(rotatePoint(sphereLoc, tableCenter, dir * ROTATION));
+            }
+            spheresToDraw = rotatedSpheres;
         }
 
         private void drawAllSpheres()
@@ -874,11 +1080,6 @@ namespace PSMoveSharpTest
             */
         }
 
-        // Room is 4m x 3m x 4m (x by y by z)
-        // Expect MoveMe coords to be limited to:
-        // -600 to +600 on x axis
-        // -300 to +300 on y axis
-        // 600 to 1400 on z axis
         private Vector3 moveToRoomCoords(Vector3 moveCoords)
         {
             Vector3 roomCoords = new Vector3(moveCoords);

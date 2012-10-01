@@ -393,6 +393,7 @@ namespace PSMoveSharp
          */
         protected PSMoveSharpState complete_state_;
         protected System.Drawing.Image complete_image_;
+        protected System.Drawing.Bitmap complete_bitmap_;
 
         public PSMoveSharpCameraFrameStateCollector()
         {
@@ -403,6 +404,7 @@ namespace PSMoveSharp
             last_state_ = new PSMoveSharpState();
             complete_state_ = new PSMoveSharpState();
             complete_image_ = new Bitmap(640, 480);
+            complete_bitmap_ = new Bitmap(640, 480);
         }
 
         protected bool IsSetComplete()
@@ -443,6 +445,7 @@ namespace PSMoveSharp
                     complete_state_ = last_state_;
                     Console.WriteLine("Complete set packet index {0}", complete_state_.packet_index);
                     complete_image_ = MakeCompleteImage();
+                    complete_bitmap_ = MakeCompleteBitmap();
                 }
             }
         }
@@ -474,9 +477,29 @@ namespace PSMoveSharp
             return full_frame;
         }
 
+        public System.Drawing.Bitmap MakeCompleteBitmap()
+        {
+            System.Drawing.Bitmap full_frame = new Bitmap(ImageWidth, ImageHeight);
+
+            Graphics gfx = Graphics.FromImage(full_frame);
+
+            for (int i = 0; i < num_slices_; i++)
+            {
+                TextureBrush brush = new TextureBrush(slices_[i].image);
+                gfx.FillRectangle(brush, 0, slices_[i].row_start, ImageWidth, slices_[i].row_count);
+            }
+
+            return full_frame;
+        }
+
         public System.Drawing.Image GetCompleteImage()
         {
             return complete_image_;
+        }
+
+        public System.Drawing.Bitmap GetCompleteBitmap()
+        {
+            return complete_bitmap_;
         }
 
         public PSMoveSharpState GetCompleteState()
@@ -531,6 +554,16 @@ namespace PSMoveSharp
             camera_frame_state_rwl.AcquireReaderLock(-1);
             state = camera_frame_state_collector.GetCompleteState();
             image = (System.Drawing.Image)camera_frame_state_collector.GetCompleteImage().Clone();
+            camera_frame_state_rwl.ReleaseReaderLock();
+            return image;
+        }
+
+        public System.Drawing.Bitmap GetCameraFrameAndStateBmp(ref PSMoveSharpState state)
+        {
+            System.Drawing.Bitmap image;
+            camera_frame_state_rwl.AcquireReaderLock(-1);
+            state = camera_frame_state_collector.GetCompleteState();
+            image = (System.Drawing.Bitmap)camera_frame_state_collector.GetCompleteBitmap().Clone();
             camera_frame_state_rwl.ReleaseReaderLock();
             return image;
         }
