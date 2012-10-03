@@ -22,7 +22,7 @@ namespace PSMoveSharpTest
         bool textureBound = false;
 
         float tableRotation = 0;
-        Vector3 tableCenter = new Vector3(0, 0, 900f);
+        Vector3 tableCenter = new Vector3(0, 0, 1200f);
 
         List<Vector3> spheresToDraw = new List<Vector3>();
         Vector3 prevPos = new Vector3(-9999f, -9999f, -9999f);
@@ -34,6 +34,9 @@ namespace PSMoveSharpTest
         const int screenHeight = 1200;
         const int scale = screenWidth / glControlWidth;
         const float ROTATION = 0.0872664626f;
+
+        System.Drawing.Bitmap backdropBmp = new System.Drawing.Bitmap("C:/Users/kevin/Documents/moveme-read-only/moveme-read-only/moveme-read-only/PSMoveSharp/PSMoveSharpTest/Backdrop2.png");
+        System.Drawing.Bitmap woodBmp = new System.Drawing.Bitmap("C:/Users/kevin/Documents/moveme-read-only/moveme-read-only/moveme-read-only/PSMoveSharp/PSMoveSharpTest/woodfloor.jpg");
 
         public MoveSharpGUI()
         {
@@ -167,7 +170,7 @@ namespace PSMoveSharpTest
                     updateTabPageCamera(camera_frame_state);
                     break;
                 case TabPageIndex.Sculpture:
-                    updateTabPageSculpture(state, camera_frame_state);
+                    updateTabPageSculpture(state);
                     break;
             }
         }
@@ -716,19 +719,20 @@ namespace PSMoveSharpTest
 
         private void glControl1_Load_1(object sender, EventArgs e)
         {
-            if (Program.image_paused)
-            {
-                Program.moveClient.CameraFrameResume();
-                Program.image_paused = false;
-                //Program.moveClient.ForceRGB(0, 1.0f, 0.0f, 0.0f);
-            }
-
             glControlLoaded = true;
             GL.ClearColor(Color.Transparent);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
             SwitchToFullscreen();
-            
+
+            LoadTextures();
             SetupViewport();
+        }
+
+        private void LoadTextures()
+        {
+            bindTexture("C:/Users/kevin/Documents/moveme-read-only/moveme-read-only/moveme-read-only/PSMoveSharp/PSMoveSharpTest/woodfloor3.jpg");
+            bindTexture("C:/Users/kevin/Documents/moveme-read-only/moveme-read-only/moveme-read-only/PSMoveSharp/PSMoveSharpTest/Backdrop2.png");
+            bindTexture("C:/Users/kevin/Documents/moveme-read-only/moveme-read-only/moveme-read-only/PSMoveSharp/PSMoveSharpTest/shadow.png");
         }
 
         private void SetupViewport()
@@ -736,7 +740,7 @@ namespace PSMoveSharpTest
             {
                 const float yFov = 0.785398163f; // 45
                 const float near = 0.01f;
-                const float far = 2500;
+                const float far = 3000;
                 float aspect_ratio = (float)glControl1.Width / (float)glControl1.Height;
                 OpenTK.Matrix4 projection;
                 projection = OpenTK.Matrix4.CreatePerspectiveFieldOfView(yFov, aspect_ratio, near, far);
@@ -755,21 +759,12 @@ namespace PSMoveSharpTest
                 GL.LoadIdentity();
                 GL.LoadMatrix(ref lookat);
             }
-
-            // Set up depth buffer
-            GL.Enable(EnableCap.DepthTest);
-            GL.DepthFunc(DepthFunction.Lequal);
-
-            // Prepare texture
-            if (!textureBound)
-            {
-                //bindTexture();
-            }
         }
 
-        private void bindTexture()
+        private void bindTexture(String path)
         {
-            System.Drawing.Bitmap bmp = new System.Drawing.Bitmap("C:/Users/kevin/Documents/moveme-read-only/moveme-read-only/moveme-read-only/PSMoveSharp/PSMoveSharpTest/photobg.jpg");
+            System.Drawing.Bitmap bmp = new System.Drawing.Bitmap(path);
+
             int texture;
 
             GL.Enable(EnableCap.Texture2D);
@@ -791,87 +786,25 @@ namespace PSMoveSharpTest
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
 
             GL.BindTexture(TextureTarget.Texture2D, texture);
-
+            Console.WriteLine(texture + ": " + path);
             textureBound = true;
         }
 
-        // Called each time the program updates its state
-        private void loadFrameTexture(System.Drawing.Bitmap bmp)
-        {
-            //Console.WriteLine("loading texture");
-            //System.Drawing.Bitmap bmp = (System.Drawing.Bitmap)(img);
-            //System.Drawing.Image image = (System.Drawing.Image)(new System.Drawing.Bitmap("C:/Users/kevin/Documents/moveme-read-only/moveme-read-only/moveme-read-only/PSMoveSharp/PSMoveSharpTest/photobg.jpg"));
-            //System.Drawing.Bitmap picbmp = new System.Drawing.Bitmap(image);
-            int texture;
-            //GL.Enable(EnableCap.Texture2D);
-
-            GL.Hint(HintTarget.PerspectiveCorrectionHint, HintMode.Nicest);
-
-            GL.GenTextures(1, out texture);
-            GL.BindTexture(TextureTarget.Texture2D, texture);
-
-            System.Drawing.Imaging.BitmapData data = bmp.LockBits(new System.Drawing.Rectangle(0, 0, bmp.Width, bmp.Height),
-                System.Drawing.Imaging.ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-
-            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, data.Width, data.Height, 0,
-                OpenTK.Graphics.OpenGL.PixelFormat.Bgra, PixelType.UnsignedByte, data.Scan0);
-
-            bmp.UnlockBits(data);
-
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
-
-            GL.BindTexture(TextureTarget.Texture2D, texture);
-
-            textureBound = true;
-        }
-        /*
-        // Called each time the program updates its state
-        private void loadFrameTexture(System.Drawing.Image img)
-        {
-            Console.WriteLine("loading texture");
-            System.Drawing.Bitmap bmp = (System.Drawing.Bitmap)(img);
-            //System.Drawing.Image image = (System.Drawing.Image)(new System.Drawing.Bitmap("C:/Users/kevin/Documents/moveme-read-only/moveme-read-only/moveme-read-only/PSMoveSharp/PSMoveSharpTest/banana.jpg"));
-            //System.Drawing.Bitmap bmp = new System.Drawing.Bitmap(image);
-            int texture;
-
-            //GL.Enable(EnableCap.Texture2D);
-
-            GL.Hint(HintTarget.PerspectiveCorrectionHint, HintMode.Nicest);
-
-            GL.GenTextures(1, out texture);
-            GL.BindTexture(TextureTarget.Texture2D, texture);
-
-            System.Drawing.Imaging.BitmapData data = bmp.LockBits(new System.Drawing.Rectangle(0, 0, bmp.Width, bmp.Height),
-                System.Drawing.Imaging.ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-
-            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, data.Width, data.Height, 0,
-                OpenTK.Graphics.OpenGL.PixelFormat.Bgra, PixelType.UnsignedByte, data.Scan0);
-
-            bmp.UnlockBits(data);
-
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
-
-            GL.BindTexture(TextureTarget.Texture2D, texture);
-
-            textureBound = true;
-        }
-        */
         // Called from the general paint function
         private void paintBackground()
-        {           
-            Console.WriteLine("painting background");
+        {
+            GL.BindTexture(TextureTarget.Texture2D, 2);
             GL.MatrixMode(MatrixMode.Modelview);
             GL.Begin(BeginMode.Quads);
+            float w = 1200;
+            float h = 1200;
+            float d = 1875;
+            float offset = -360;
+            float depth_offset = -625;
 
-            float w = 3200;
-            float h = 2400;
-            float d = 2000;
-            float offset = 400;
-
-            GL.TexCoord2(1.0f, 1.0f); GL.Vertex3(-w, -h - offset, d);
-            GL.TexCoord2(0.0f, 1.0f); GL.Vertex3(w, -h - offset, d);
+            
+            GL.TexCoord2(1.0f, 1.0f); GL.Vertex3(-w, -h - offset, d + depth_offset);
+            GL.TexCoord2(0.0f, 1.0f); GL.Vertex3(w, -h - offset, d + depth_offset);
             GL.TexCoord2(0.0f, 0.0f); GL.Vertex3(w, h - offset, d);
             GL.TexCoord2(1.0f, 0.0f); GL.Vertex3(-w, h - offset, d);
             /*
@@ -879,8 +812,7 @@ namespace PSMoveSharpTest
             GL.TexCoord2(1.0f, 1.0f); GL.Vertex3(w, -h - offset, d);
             GL.TexCoord2(1.0f, 0.0f); GL.Vertex3(w, h - offset, d);
             GL.TexCoord2(0.0f, 0.0f); GL.Vertex3(-w, h - offset, d);
-             * */
-
+            */
             GL.End();
         }
 
@@ -898,14 +830,8 @@ namespace PSMoveSharpTest
             }
         }
 
-        private void updateTabPageSculpture(PSMoveSharpState state, PSMoveSharpCameraFrameState camera_frame_state)
+        private void updateTabPageSculpture(PSMoveSharpState state)
         {
-            camera_frame_state.camera_frame_state_rwl.AcquireReaderLock(-1);
-            PSMoveSharpState dummy_state = new PSMoveSharpState();
-            System.Drawing.Bitmap cameraFrame = camera_frame_state.GetCameraFrameAndStateBmp(ref dummy_state);
-            camera_frame_state.camera_frame_state_rwl.ReleaseReaderLock();
-
-            loadFrameTexture(cameraFrame);
             glControl1.Invalidate();
         }
 
@@ -922,27 +848,19 @@ namespace PSMoveSharpTest
             paintBackground();
             GL.Disable(EnableCap.Texture2D);
 
-            /*
-            Vector3 p2 = new Vector3(0, -375f, 900f);
-            GL.MatrixMode(MatrixMode.Modelview);
-            GL.PushMatrix();
-            GL.Translate(Vector3.Multiply(p2, -1));
-            Vector3 rotated = new Vector3(
-                p2.Z * (float)Math.Sin(tableRotation) + p2.X * (float)Math.Cos(tableRotation),
-                p2.Y,
-                p2.Z * (float)Math.Cos(tableRotation) - p2.X * (float)Math.Sin(tableRotation));
-                        
-            GL.Translate(rotated);
-            drawCylinder(200f, new Vector3(0, -400f, 900f), p2, 20);
-            GL.PopMatrix();
-            */
-            Vector3 p1 = new Vector3(tableCenter.X, -400f, tableCenter.Z);
-            Vector3 p2 = new Vector3(tableCenter.X, -375f, tableCenter.Z);
-            drawCylinder(200f, p1, p2, 20);
+            float cyl_radius = 400f;
+            float top_of_table = -390f;
+            float table_thickness = 10f;
+            Vector3 p1 = new Vector3(tableCenter.X, top_of_table - table_thickness, tableCenter.Z);
+            Vector3 p2 = new Vector3(tableCenter.X, top_of_table, tableCenter.Z);
+            drawCylinder(cyl_radius, p1, p2, 20);
 
             PSMoveSharpState state = Program.moveClient.GetLatestState();
             Vector3 pos = getXYZ(state);
+
             drawSphereAtLocation(pos);
+            drawShadow(pos, top_of_table + 5);
+            
             GL.PushMatrix();
             //GL.Translate(new Vector3(-2f, 0, 0));
             GL.Scale(new Vector3(25f, 25f, 25f));
@@ -952,8 +870,50 @@ namespace PSMoveSharpTest
             glControl1.SwapBuffers();
         }
 
+        private void drawShadow(Vector3 pos, float y)
+        {
+            // Enable texturing
+            GL.Enable(EnableCap.Texture2D);
+
+            // Bind shadow texture
+            GL.BindTexture(TextureTarget.Texture2D, 3);
+
+            GL.MatrixMode(MatrixMode.Modelview);
+            GL.Enable(EnableCap.Blend);
+            GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
+            GL.Begin(BeginMode.Quads);
+
+            float y_dist = Math.Abs(pos.Y - y);
+            float scale = 750;
+            double factor = Math.Exp(y_dist / scale);
+            float w = 25f / (float)factor;
+            float h = 25f / (float)factor;
+            //float w = 12;
+            //float h = 12;
+
+            GL.TexCoord2(1.0f, 1.0f); GL.Vertex3(-pos.X + w, y, pos.Z + h);
+            GL.TexCoord2(0.0f, 1.0f); GL.Vertex3(-pos.X - w, y, pos.Z + h);
+            GL.TexCoord2(0.0f, 0.0f); GL.Vertex3(-pos.X - w, y, pos.Z - h);
+            GL.TexCoord2(1.0f, 0.0f); GL.Vertex3(-pos.X + w, y, pos.Z - h);
+
+            GL.BlendFunc(BlendingFactorSrc.One, BlendingFactorDest.Zero);
+            GL.Disable(EnableCap.Blend);
+            GL.Disable(EnableCap.Texture2D);
+            GL.End();
+        }
+
         private void drawCylinder(float radius, Vector3 p1, Vector3 p2, int facets)
         {
+            // Bind the wood texture
+            GL.BindTexture(TextureTarget.Texture2D, 1);
+
+            // Set up depth buffer
+            GL.Enable(EnableCap.DepthTest);
+            GL.DepthFunc(DepthFunction.Lequal);
+
+            // Enable texturing
+            GL.Enable(EnableCap.Texture2D);
+
             Vector3 axis = Vector3.Subtract(p2, p1);
             axis = Vector3.Normalize(axis);
             Vector3 nonColinear = Vector3.Add(axis, new Vector3(1.0f, 0, 1f));
@@ -966,11 +926,12 @@ namespace PSMoveSharpTest
             float TWOPI = (float)Math.PI * 2.0f;
             GL.Begin(BeginMode.Triangles);
 
-            Color[] colorList = { Color.Purple, Color.Blue, Color.Green, Color.Yellow, Color.Orange, Color.Red };
-            int colorPos = 0;
+            //Color[] colorList = { Color.Purple, Color.Blue, Color.Green, Color.Yellow, Color.Orange, Color.Red };
+            //int colorPos = 0;
+
             for (int i = 0; i < facets; i++)
             {
-                GL.Color3(colorList[colorPos]);
+                //GL.Color3(colorList[colorPos]);
                 float theta1 = i * TWOPI / facets;
                 float theta2 = (i + 1) * TWOPI / facets;
 
@@ -999,6 +960,11 @@ namespace PSMoveSharpTest
                 q2 = rotatePoint(q2, p2, tableRotation);
                 q3 = rotatePoint(q3, p1, tableRotation);
 
+                Vector3 q1norm = Vector3.Normalize(Vector3.Subtract(q1, p2));
+                Vector3 q2norm = Vector3.Normalize(Vector3.Subtract(q2, p2));
+                q1norm = rotatePoint(q1norm, new Vector3(0, 0, 0), -tableRotation);
+                q2norm = rotatePoint(q2norm, new Vector3(0, 0, 0), -tableRotation);
+
                 // Side facet
                 GL.Vertex3(q3);
                 GL.Vertex3(q0);
@@ -1007,14 +973,19 @@ namespace PSMoveSharpTest
                 GL.Vertex3(q0);
                 GL.Vertex3(q2);
                 GL.Vertex3(q1);
-
+ 
                 // Top facet
+                GL.TexCoord2(q1norm.X, q1norm.Z);
                 GL.Vertex3(q1);
+                GL.TexCoord2(q2norm.X, q2norm.Z);
                 GL.Vertex3(q2);
+                GL.TexCoord2(0, 0);
                 GL.Vertex3(p2);
 
-                colorPos = (colorPos + 1) % colorList.Length;
+                //colorPos = (colorPos + 1) % colorList.Length;
             }
+            GL.Disable(EnableCap.Texture2D);
+            GL.Disable(EnableCap.DepthTest);
             GL.End();
         }
 
@@ -1042,10 +1013,16 @@ namespace PSMoveSharpTest
 
         private void drawAllSpheres()
         {
+            // Set up depth buffer
+            GL.Enable(EnableCap.DepthTest);
+            GL.DepthFunc(DepthFunction.Lequal);
+
             foreach (Vector3 sphereLoc in spheresToDraw)
             {
                 drawSphereAtLocation(sphereLoc);
             }
+
+            GL.Disable(EnableCap.DepthTest);
         }
 
         private void drawSphereAtLocation(Vector3 moveCoords)
@@ -1088,6 +1065,7 @@ namespace PSMoveSharpTest
 
         private void DrawSphere(float Radius, uint Precision)
         {
+            GL.BlendFunc(BlendingFactorSrc.One, BlendingFactorDest.Zero);
             if (Radius < 0f)
                 Radius = -Radius;
             if (Radius == 0f)
