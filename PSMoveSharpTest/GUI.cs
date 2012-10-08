@@ -21,8 +21,13 @@ namespace PSMoveSharpTest
         bool fullScreen = false;
         bool textureBound = false;
 
+        Vector3 camera_up = new Vector3(0, 1, 0);
+
         float tableRotation = 0;
-        Vector3 tableCenter = new Vector3(0, 0, 1200f);
+        //Vector3 tableCenter = new Vector3(0, 0, 1200f);
+        Vector3 tableCenter = new Vector3(0, 0, 1000f);
+        float table_radius = 400f;
+        float top_of_table = -388f;
 
         List<Vector3> spheresToDraw = new List<Vector3>();
         Vector3 prevPos = new Vector3(-9999f, -9999f, -9999f);
@@ -751,10 +756,22 @@ namespace PSMoveSharpTest
 
             {
                 OpenTK.Matrix4 lookat;
+
+                /*
                 lookat = OpenTK.Matrix4.LookAt(0f, 220f, -180f,
                                                0f, 175f, 0,
                                                0.0f, 1.0f, 0.0f);
+                 * */
 
+                //float camera_y = 210f / 2f;
+                //float camera_z = -1050f / 2f;
+                float camera_y = 55f / 1f;
+                float camera_z = -910f / 4f;
+                camera_up = Vector3.Normalize(new Vector3(0, Math.Abs(camera_y), Math.Abs(camera_z)));
+                lookat = OpenTK.Matrix4.LookAt(0f, camera_y, camera_z,
+                                               0f, 0f, 0,
+                                               camera_up.X, camera_up.Y, camera_up.Z);
+                
                 GL.MatrixMode(MatrixMode.Modelview);
                 GL.LoadIdentity();
                 GL.LoadMatrix(ref lookat);
@@ -798,6 +815,22 @@ namespace PSMoveSharpTest
             GL.Begin(BeginMode.Quads);
             float w = 1200;
             float h = 1200;
+            float d = 1675;
+            float offset = 175;
+            float depth_offset = -425;
+
+
+            GL.TexCoord2(1.0f, 1.0f); GL.Vertex3(-w, -h + offset, d + depth_offset);
+            GL.TexCoord2(0.0f, 1.0f); GL.Vertex3(w, -h + offset, d + depth_offset);
+            GL.TexCoord2(0.0f, 0.0f); GL.Vertex3(w, h + offset, d);
+            GL.TexCoord2(1.0f, 0.0f); GL.Vertex3(-w, h + offset, d);
+
+            /*
+            GL.BindTexture(TextureTarget.Texture2D, 2);
+            GL.MatrixMode(MatrixMode.Modelview);
+            GL.Begin(BeginMode.Quads);
+            float w = 1200;
+            float h = 1200;
             float d = 1875;
             float offset = -360;
             float depth_offset = -625;
@@ -807,6 +840,7 @@ namespace PSMoveSharpTest
             GL.TexCoord2(0.0f, 1.0f); GL.Vertex3(w, -h - offset, d + depth_offset);
             GL.TexCoord2(0.0f, 0.0f); GL.Vertex3(w, h - offset, d);
             GL.TexCoord2(1.0f, 0.0f); GL.Vertex3(-w, h - offset, d);
+            */
             /*
             GL.TexCoord2(0.0f, 1.0f); GL.Vertex3(-w, -h - offset, d);
             GL.TexCoord2(1.0f, 1.0f); GL.Vertex3(w, -h - offset, d);
@@ -848,12 +882,11 @@ namespace PSMoveSharpTest
             paintBackground();
             GL.Disable(EnableCap.Texture2D);
 
-            float cyl_radius = 400f;
-            float top_of_table = -390f;
+            //float top_of_table = -390f;
             float table_thickness = 10f;
             Vector3 p1 = new Vector3(tableCenter.X, top_of_table - table_thickness, tableCenter.Z);
             Vector3 p2 = new Vector3(tableCenter.X, top_of_table, tableCenter.Z);
-            drawCylinder(cyl_radius, p1, p2, 20);
+            drawCylinder(table_radius, p1, p2, 40);
 
             PSMoveSharpState state = Program.moveClient.GetLatestState();
             Vector3 pos = getXYZ(state);
@@ -861,11 +894,6 @@ namespace PSMoveSharpTest
             drawSphereAtLocation(pos);
             drawShadow(pos, top_of_table + 5);
             
-            GL.PushMatrix();
-            //GL.Translate(new Vector3(-2f, 0, 0));
-            GL.Scale(new Vector3(25f, 25f, 25f));
-            DrawSphere(1.0f, 14);
-            GL.PopMatrix();
             drawAllSpheres();
             glControl1.SwapBuffers();
         }
@@ -1052,14 +1080,15 @@ namespace PSMoveSharpTest
         private Vector3 moveToRoomCoords(Vector3 moveCoords)
         {
             Vector3 roomCoords = new Vector3(moveCoords);
+            
+            roomCoords.X = roomCoords.X / 1f;
+            roomCoords.Y = roomCoords.Y / 1f;
+            roomCoords.Z = roomCoords.Z / 1f;
             /*
-            roomCoords.X = -roomCoords.X / 200f;
-            roomCoords.Y = roomCoords.Y / 200f;
-            roomCoords.Z = roomCoords.Z / 200f;
-            */
             roomCoords.X = -roomCoords.X;
             roomCoords.Y = roomCoords.Y / 1f;
             roomCoords.Z = roomCoords.Z / 1f;
+             * */
             return roomCoords;
         }
 
