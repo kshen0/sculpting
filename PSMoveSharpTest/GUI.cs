@@ -38,7 +38,8 @@ namespace PSMoveSharpTest
         //const int screenWidth = 1600;
         const int screenHeight = 1200;
         const int scale = screenWidth / glControlWidth;
-        const float ROTATION = 0.0872664626f;
+        //const float ROTATION = 0.0872664626f;
+        const float ROTATION = 0.0672664626f;
 
         System.Drawing.Bitmap backdropBmp = new System.Drawing.Bitmap("C:/Users/kevin/Documents/moveme-read-only/moveme-read-only/moveme-read-only/PSMoveSharp/PSMoveSharpTest/Backdrop2.png");
         System.Drawing.Bitmap woodBmp = new System.Drawing.Bitmap("C:/Users/kevin/Documents/moveme-read-only/moveme-read-only/moveme-read-only/PSMoveSharp/PSMoveSharpTest/woodfloor.jpg");
