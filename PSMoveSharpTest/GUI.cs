@@ -17,32 +17,30 @@ namespace PSMoveSharpTest
     public partial class MoveSharpGUI : Form
     {
         Form fullScreenForm;
+
         bool glControlLoaded = false;
         bool fullScreen = false;
-        bool textureBound = false;
 
         Vector3 camera_up = new Vector3(0, 1, 0);
 
         float tableRotation = 0;
-        //Vector3 tableCenter = new Vector3(0, 0, 1200f);
         Vector3 tableCenter = new Vector3(0, 0, 1000f);
         float table_radius = 400f;
         float top_of_table = -388f;
 
         List<Vector3> spheresToDraw = new List<Vector3>();
         Vector3 prevPos = new Vector3(-9999f, -9999f, -9999f);
-        float minDist = 15;
+        float minDist = 15; // Minimum distance change before a new sphere is drawn
+
         const int glControlWidth = 800;
         const int glControlHeight = 500;
-        const int screenWidth = 1920;
-        //const int screenWidth = 1600;
-        const int screenHeight = 1200;
-        const int scale = screenWidth / glControlWidth;
-        //const float ROTATION = 0.0872664626f;
-        const float ROTATION = 0.0672664626f;
 
-        System.Drawing.Bitmap backdropBmp = new System.Drawing.Bitmap("C:/Users/kevin/Documents/moveme-read-only/moveme-read-only/moveme-read-only/PSMoveSharp/PSMoveSharpTest/Backdrop2.png");
-        System.Drawing.Bitmap woodBmp = new System.Drawing.Bitmap("C:/Users/kevin/Documents/moveme-read-only/moveme-read-only/moveme-read-only/PSMoveSharp/PSMoveSharpTest/woodfloor.jpg");
+        // Hard-coded constants for the resolution of your workstation
+        const int screenWidth = 1920;
+        const int screenHeight = 1200;
+
+        const int scale = screenWidth / glControlWidth;
+        const float ROTATION = 0.0272664626f; // Amount to rotate by per state refresh when button is pressed
 
         public MoveSharpGUI()
         {
@@ -103,6 +101,7 @@ namespace PSMoveSharpTest
             return euler;
         }
 
+        // Called by the main loop
         private void updateState()
         {
             updateToolbar();
@@ -181,10 +180,9 @@ namespace PSMoveSharpTest
             }
         }
 
-        // Place in the the parent Form
         public void SwitchToFullscreen()
         {
-            // Force primary monitor resolution to 1920x1200
+            // Force primary monitor resolution to our resolution constants
             DisplayDevice.Default.ChangeResolution(screenWidth, screenHeight, 32, 60.0f);
            
             // Create new maximized, borderless, top-most Form of size 1920x1200
@@ -210,25 +208,8 @@ namespace PSMoveSharpTest
             glControl1.Invalidate();
             fullScreenForm.Show();
             fullScreen = true;
+
             System.Threading.Thread.Sleep(400);
-            /*
-            this.FormBorderStyle = FormBorderStyle.None;
-            //this.TopMost = true;
-
-            // Change the resolution of the primary monitor.
-            DisplayDevice.Default.ChangeResolution(screenWidth, screenHeight, 32, 60.0f);
-
-            // Go fullscreen
-            this.WindowState = FormWindowState.Maximized;
-
-            fullScreen = true;
-
-            glControl1.Width = screenWidth;
-            glControl1.Height = screenHeight;
-
-            // Wait for 400ms so we don't toggle window change again while the button is still depressed
-            System.Threading.Thread.Sleep(400);
-             */
         }
 
         public void SwitchToWindowed()
@@ -246,10 +227,12 @@ namespace PSMoveSharpTest
 
             fullScreen = false;
             glControl1.Invalidate();
+
             // Wait for 400ms so we don't toggle window change again while the button is still depressed
             System.Threading.Thread.Sleep(400);
         }
 
+        // Get the position of the controller
         private Vector3 getXYZ(PSMoveSharpState state)
         {
             PSMoveSharpGemState selected_gem = state.gemStates[Program.selected_move];
@@ -734,6 +717,7 @@ namespace PSMoveSharpTest
             SetupViewport();
         }
 
+        // Load all the textures we need into GL
         private void LoadTextures()
         {
             bindTexture("C:/Users/kevin/Documents/moveme-read-only/moveme-read-only/moveme-read-only/PSMoveSharp/PSMoveSharpTest/woodfloor3.jpg");
@@ -741,6 +725,7 @@ namespace PSMoveSharpTest
             bindTexture("C:/Users/kevin/Documents/moveme-read-only/moveme-read-only/moveme-read-only/PSMoveSharp/PSMoveSharpTest/shadow.png");
         }
 
+        // Calibrate camera
         private void SetupViewport()
         {
             {
@@ -758,14 +743,6 @@ namespace PSMoveSharpTest
             {
                 OpenTK.Matrix4 lookat;
 
-                /*
-                lookat = OpenTK.Matrix4.LookAt(0f, 220f, -180f,
-                                               0f, 175f, 0,
-                                               0.0f, 1.0f, 0.0f);
-                 * */
-
-                //float camera_y = 210f / 2f;
-                //float camera_z = -1050f / 2f;
                 float camera_y = 55f / 1f;
                 float camera_z = -910f / 4f;
                 camera_up = Vector3.Normalize(new Vector3(0, Math.Abs(camera_y), Math.Abs(camera_z)));
@@ -779,6 +756,8 @@ namespace PSMoveSharpTest
             }
         }
 
+        // Load a texture and bind it to target
+        // Should only use when loading textures the first time
         private void bindTexture(String path)
         {
             System.Drawing.Bitmap bmp = new System.Drawing.Bitmap(path);
@@ -805,10 +784,10 @@ namespace PSMoveSharpTest
 
             GL.BindTexture(TextureTarget.Texture2D, texture);
             Console.WriteLine(texture + ": " + path);
-            textureBound = true;
         }
 
         // Called from the general paint function
+        // Creates a textured quad and draws it behind the scene
         private void paintBackground()
         {
             GL.BindTexture(TextureTarget.Texture2D, 2);
@@ -826,31 +805,10 @@ namespace PSMoveSharpTest
             GL.TexCoord2(0.0f, 0.0f); GL.Vertex3(w, h + offset, d);
             GL.TexCoord2(1.0f, 0.0f); GL.Vertex3(-w, h + offset, d);
 
-            /*
-            GL.BindTexture(TextureTarget.Texture2D, 2);
-            GL.MatrixMode(MatrixMode.Modelview);
-            GL.Begin(BeginMode.Quads);
-            float w = 1200;
-            float h = 1200;
-            float d = 1875;
-            float offset = -360;
-            float depth_offset = -625;
-
-            
-            GL.TexCoord2(1.0f, 1.0f); GL.Vertex3(-w, -h - offset, d + depth_offset);
-            GL.TexCoord2(0.0f, 1.0f); GL.Vertex3(w, -h - offset, d + depth_offset);
-            GL.TexCoord2(0.0f, 0.0f); GL.Vertex3(w, h - offset, d);
-            GL.TexCoord2(1.0f, 0.0f); GL.Vertex3(-w, h - offset, d);
-            */
-            /*
-            GL.TexCoord2(0.0f, 1.0f); GL.Vertex3(-w, -h - offset, d);
-            GL.TexCoord2(1.0f, 1.0f); GL.Vertex3(w, -h - offset, d);
-            GL.TexCoord2(1.0f, 0.0f); GL.Vertex3(w, h - offset, d);
-            GL.TexCoord2(0.0f, 0.0f); GL.Vertex3(-w, h - offset, d);
-            */
             GL.End();
         }
 
+        // Determines whether or not to add the current controller location to the list of spheres to draw
         private void processSpherePos(PSMoveSharpState state)
         {
             PSMoveSharpGemState selected_gem = state.gemStates[Program.selected_move];
@@ -870,6 +828,7 @@ namespace PSMoveSharpTest
             glControl1.Invalidate();
         }
 
+        // Paint the GL scene
         private void glControl1_Paint(object sender, PaintEventArgs e)
         {
             if (!glControlLoaded)
@@ -883,22 +842,26 @@ namespace PSMoveSharpTest
             paintBackground();
             GL.Disable(EnableCap.Texture2D);
 
-            //float top_of_table = -390f;
+            // Paint the turntable
             float table_thickness = 10f;
             Vector3 p1 = new Vector3(tableCenter.X, top_of_table - table_thickness, tableCenter.Z);
             Vector3 p2 = new Vector3(tableCenter.X, top_of_table, tableCenter.Z);
             drawCylinder(table_radius, p1, p2, 40);
 
+            // Get controller position
             PSMoveSharpState state = Program.moveClient.GetLatestState();
             Vector3 pos = getXYZ(state);
 
+            // Draw the avatar and its shadow
             drawSphereAtLocation(pos);
             drawShadow(pos, top_of_table + 5);
             
+            // Draw all the spheres
             drawAllSpheres();
             glControl1.SwapBuffers();
         }
 
+        // Draws the avatar's shadow as a textured quad
         private void drawShadow(Vector3 pos, float y)
         {
             // Enable texturing
@@ -914,11 +877,9 @@ namespace PSMoveSharpTest
 
             float y_dist = Math.Abs(pos.Y - y);
             float scale = 750;
-            double factor = Math.Exp(y_dist / scale);
+            double factor = Math.Exp(y_dist / scale); // Scaling factor to make the shadow larger as it approaches the ground
             float w = 25f / (float)factor;
             float h = 25f / (float)factor;
-            //float w = 12;
-            //float h = 12;
 
             GL.TexCoord2(1.0f, 1.0f); GL.Vertex3(-pos.X + w, y, pos.Z + h);
             GL.TexCoord2(0.0f, 1.0f); GL.Vertex3(-pos.X - w, y, pos.Z + h);
@@ -955,12 +916,8 @@ namespace PSMoveSharpTest
             float TWOPI = (float)Math.PI * 2.0f;
             GL.Begin(BeginMode.Triangles);
 
-            //Color[] colorList = { Color.Purple, Color.Blue, Color.Green, Color.Yellow, Color.Orange, Color.Red };
-            //int colorPos = 0;
-
             for (int i = 0; i < facets; i++)
             {
-                //GL.Color3(colorList[colorPos]);
                 float theta1 = i * TWOPI / facets;
                 float theta2 = (i + 1) * TWOPI / facets;
 
@@ -1010,14 +967,16 @@ namespace PSMoveSharpTest
                 GL.Vertex3(q2);
                 GL.TexCoord2(0, 0);
                 GL.Vertex3(p2);
-
-                //colorPos = (colorPos + 1) % colorList.Length;
             }
+
             GL.Disable(EnableCap.Texture2D);
             GL.Disable(EnableCap.DepthTest);
             GL.End();
         }
 
+        // Translates toward the origin by the negative of the vector formed by the origin and the center of the turntable
+        // Then rotates the point and translates by the positive of that vector
+        // Effect: rotation around center of turntable
         private Vector3 rotatePoint(Vector3 p, Vector3 center, float theta)
         {
             p = Vector3.Subtract(p, center);
@@ -1062,35 +1021,6 @@ namespace PSMoveSharpTest
             GL.Scale(scaleFactor, scaleFactor, scaleFactor);
             DrawSphere(1.0f, 14);
             GL.PopMatrix();
-            /*
-            Vector3 roomCoords = moveToRoomCoords(moveCoords);
-            if (fullScreen)
-            {
-                //Vector3.Multiply(roomCoords, scale);
-                roomCoords = Vector3.Multiply(roomCoords, scale);
-            }
-            GL.PushMatrix();
-            GL.Translate(roomCoords.X, roomCoords.Y, roomCoords.Z);
-            float scaleFactor = 15f;
-            GL.Scale(scaleFactor, scaleFactor, scaleFactor);
-            DrawSphere(1.0f, 14);
-            GL.PopMatrix();
-            */
-        }
-
-        private Vector3 moveToRoomCoords(Vector3 moveCoords)
-        {
-            Vector3 roomCoords = new Vector3(moveCoords);
-            
-            roomCoords.X = roomCoords.X / 1f;
-            roomCoords.Y = roomCoords.Y / 1f;
-            roomCoords.Z = roomCoords.Z / 1f;
-            /*
-            roomCoords.X = -roomCoords.X;
-            roomCoords.Y = roomCoords.Y / 1f;
-            roomCoords.Z = roomCoords.Z / 1f;
-             * */
-            return roomCoords;
         }
 
         private void DrawSphere(float Radius, uint Precision)
